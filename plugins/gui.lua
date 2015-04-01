@@ -11,7 +11,7 @@ function contar_gui(msg)
     gui_count = 0
     return nil
   end
-  gui_count += 1
+  gui_count = gui_count + 1
   if gui_count == 4 then
     return "CALA A BOCA, GUI"
   end
