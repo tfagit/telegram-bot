@@ -108,9 +108,13 @@ return {
 		"!plugins reload: reloads all plugins" },
 	patterns = {
 		"^!plugins$",
+		"^#plugins$",
 		"^!plugins? (enable) (.*)$",
+		"^#plugins? (enable) (.*)$",
 		"^!plugins? (disable) (.*)$",
-		"^!plugins? (reload)$" }, 
+		"^#plugins? (disable) (.*)$",
+		"^!plugins? (reload)$",
+		"^#plugins? (reload)$" }, 
 	run = run,
 	privileged = true
 }

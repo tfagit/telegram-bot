@@ -68,7 +68,9 @@ return {
   },
   patterns = {
     "^!help$",
-    "^!help md$"
+    "^#help$",
+    "^!help md$",
+    "^#help md$"
   }, 
   run = run 
 }

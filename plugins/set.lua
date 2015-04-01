@@ -25,7 +25,10 @@ end
 return {
     description = "Plugin for saving values. get.lua plugin is necesary to retrieve them.", 
     usage = "!set [value_name] [data]: Saves the data with the value_name name.",
-    patterns = {"^!set (%a+) (.+)$"}, 
+    patterns = {
+    	"^!set (%a+) (.+)$",
+    	"^#set (%a+) (.+)$"
+    }, 
     run = run 
 }
 

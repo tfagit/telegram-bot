@@ -85,7 +85,10 @@ return {
     usage = "!get (value_name): Returns the value_name value.",
     patterns = {
       "^!get (%a+)$",
-      "^!get$"},
+      "^#get (%a+)$",
+      "^!get$",
+      "^#get$"
+    },
     run = run,
     lex = lex
 }
