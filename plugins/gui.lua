@@ -12,7 +12,7 @@ function contar_gui(msg)
     return nil
   end
   gui_count = gui_count + 1
-  if gui_count == 4 then
+  if gui_count >= 4 then
     return "CALA A BOCA, GUI"
   end
 end
