@@ -1,7 +1,7 @@
 local _file_values = './data/values.lua'
 
 function save_value(chat, text )
-	var_name, var_value = string.match(text, "!set (%a+) (.+)")
+	var_name, var_value = string.match(text, "(%a+) (.+)")
 	if (var_name == nil or var_value == nil) then
 		return "Usage: !set var_name value"
 	end
@@ -26,8 +26,7 @@ return {
     description = "Plugin for saving values. get.lua plugin is necesary to retrieve them.", 
     usage = "!set [value_name] [data]: Saves the data with the value_name name.",
     patterns = {
-    	"^!set (%a+) (.+)$",
-    	"^#set (%a+) (.+)$"
+    	"^[!#]set (%a+) (.+)$"
     }, 
     run = run 
 }

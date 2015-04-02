@@ -39,11 +39,11 @@ end
 function run(msg, matches)
   local url = nil
   
-  if matches[1] == "!boobs" then
+  if matches[1] == "boobs" then
     url = getRandomBoobs()
   end
 
-  if matches[1] == "!butts" then
+  if matches[1] == "butts" then
     url = getRandomButts()
   end
 
@@ -62,10 +62,8 @@ return {
     "!butts"
   },
   patterns = {
-    "^!boobs$",
-    "^#boobs$",
-    "^!butts$",
-    "^#butts$"
+    "^[!#](boobs)$",
+    "^[!#](butts)$"
   }, 
   run = run 
 }

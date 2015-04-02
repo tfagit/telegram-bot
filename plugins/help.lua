@@ -53,7 +53,7 @@ function telegram_help( )
 end
 
 function run(msg, matches)
-  if matches[1] == "!help md" then
+  if matches[1] == "help md" then
     return html_help()
   else
     return telegram_help()
@@ -67,10 +67,8 @@ return {
     "!help md: Generate a GitHub Markdown table"
   },
   patterns = {
-    "^!help$",
-    "^#help$",
-    "^!help md$",
-    "^#help md$"
+    "^[!#]help$",
+    "^[!#](help md$)"
   }, 
   run = run 
 }

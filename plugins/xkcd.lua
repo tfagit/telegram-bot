@@ -33,7 +33,7 @@ end
 
 function run(msg, matches)
   local receiver = get_receiver(msg)
-  if matches[1] == "!xkcd" then
+  if matches[1] == "xkcd" then
     url, title = get_xkcd_random()
   else
     url, title = get_xkcd(matches[1])
@@ -47,10 +47,8 @@ return {
   description = "Send comic images from xkcd", 
   usage = {"!xkcd (id): Send an xkcd image and title. If not id, send a random one"},
   patterns = {
-    "^!xkcd$",
-    "^#xkcd$",
-    "^!xkcd (%d+)",
-    "^#xkcd (%d+)",
+    "^[!#](xkcd)$",
+    "^[!#]xkcd (%d+)"
     "xkcd.com/(%d+)"
   }, 
   run = run 
