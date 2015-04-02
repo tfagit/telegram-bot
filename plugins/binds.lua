@@ -57,7 +57,7 @@ return {
   patterns = {
     "^[!#](espinhao)$",
     "^[!#](esquilo)$",
-    "^[!#](bind)$",
+    "^[!#](bind)$"
   },
   run = run
 }
