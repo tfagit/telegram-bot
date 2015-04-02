@@ -80,18 +80,22 @@ end
 
 function run(msg, matches)
 	-- Show the available plugins 
-	if #matches == 1 then
+	if matches[1] == 'plugins' then
 		return list_plugins()
-	elseif matches[2] == 'enable' then
-		print("enable: "..matches[3])
-		return enable_plugin(matches[3])
-	elseif matches[2] == 'disable' then
-		print("disable: "..matches[3])
-		return disable_plugin(matches[3])
-	elseif matches[2] == 'reload' then
+	end
+	-- Enable a plugin
+	if matches[1] == 'enable' then
+		print("enable: "..matches[2])
+		return enable_plugin(matches[2])
+	end
+	-- Disable a plugin
+	if matches[1] == 'disable' then
+		print("disable: "..matches[2])
+		return disable_plugin(matches[2])
+	end
+	-- Reload all the plugins!
+	if matches[1] == 'reload' then
 		return reload_plugins(true)
-	else
-		return "Command " .. matches[2] .. " not recognized."
 	end
 end
 
@@ -104,8 +108,9 @@ return {
 		"!plugins reload: reloads all plugins" },
 	patterns = {
 		"^[!#](plugins)$",
-		"^[!#](plugins?) (%l*)$"},
-		"^[!#](plugins?) (%l*) (%l*)$" },
+		"^[!#]plugins? (enable) (.*)$",
+		"^[!#]plugins? (disable) (.*)$",
+		"^[!#]plugins? (reload)$" }, 
 	run = run,
 	privileged = true
 }
