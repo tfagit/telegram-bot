@@ -46,18 +46,18 @@ function get_value(chat, value_name)
     return text
   end 
   local value = _values[chat][value_name]
-  if ( value == nil) then
+  if (value == nil) then
     return "Can't find "..value_name
   end
-  return value_name.." = "..value
+  return value
 end
 
 function run(msg, matches)
   local chat_id = tostring(msg.to.id)
-  if matches[1] == "!get" then
+  if #matches == 1 then
     return get_value(chat_id, nil)
   end  
-   return get_value(chat_id, matches[1])
+    return get_value(chat_id, matches[2])
 end
 
 function lex(msg)
@@ -84,10 +84,8 @@ return {
     description = "Retrieves variables saved with !set", 
     usage = "!get (value_name): Returns the value_name value.",
     patterns = {
-      "^!get (%a+)$",
-      "^#get (%a+)$",
-      "^!get$",
-      "^#get$"
+      "^[!#](get) (%a+)$",
+      "^[!#](get)$"
     },
     run = run,
     lex = lex
