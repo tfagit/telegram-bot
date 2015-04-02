@@ -1,3 +1,5 @@
 res/
 data/
 bot/config.lua
+*.sublime-project
+*.sublime-workspace
