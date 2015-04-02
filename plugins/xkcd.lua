@@ -8,14 +8,15 @@ function get_last_id()
 end
 
 function get_xkcd(id)
-  local res,code  = http.request("http://xkcd.com/"..id.."/info.0.json")
+  local comic_url = "http://xkcd.com/"..id
+  local res,code  = http.request(comic_url.."/info.0.json")
   if code ~= 200 then return "HTTP ERROR" end
   local data = json:decode(res)
   local link_image = data.img
   if link_image:sub(0,2) == '//' then
     link_image = msg.text:sub(3,-1)
   end
-  return link_image, data.title, data.alt
+  return link_image, data.title, data.alt, comic_url
 end
 
 
@@ -27,7 +28,7 @@ end
 
 function send_data(cb_extra, success, result)
   if success then
-    msg_to_send = "Title:" .. cb_extra[2] .. "\nAlt:"..cb_extra[3].."\nSource:"..cb_extra[4]
+    msg_to_send = "Title: " .. cb_extra[2] .. "\nAlt: "..cb_extra[3].."\nSource: "..cb_extra[4]
     send_msg(cb_extra[1], msg_to_send, ok_cb, false)
   end
 end
@@ -35,12 +36,12 @@ end
 function run(msg, matches)
   local receiver = get_receiver(msg)
   if matches[1] == "xkcd" then
-    url, title, alt = get_xkcd_random()
+    url, title, alt, comic_url = get_xkcd_random()
   else
-    url, title, alt = get_xkcd(matches[1])
+    url, title, alt, comic_url = get_xkcd(matches[1])
   end
   file_path = download_to_file(url)
-  send_photo(receiver, file_path, send_data, {receiver, title, alt, url})
+  send_photo(receiver, file_path, send_data, {receiver, title, alt, comic_url})
   return false
 end
 
