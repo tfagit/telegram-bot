@@ -35,16 +35,16 @@ end
 
 function run(msg, matches)
   if matches[1] == "espinhao" then
-    getEspinhao()
+    return getEspinhao()
   end
 
   if matches[1] == "esquilo" then
-    getEsquilo()
+    return getEsquilo()
   end
   
   if matches[1] == "bind" then
-    getBind()
-   end
+    return getBind()
+  end
 end
 
 return {
