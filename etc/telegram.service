@@ -1,0 +1,17 @@
+# Copy to /etc/systemd/system/telegram.service
+
+[Unit]
+Description=Telegram Bot
+Documentation=https://github.com/tfagit/telegram-bot/blob/master/README.md
+After=network.target
+
+[Service]
+Type=simple
+# You're advised to create an user for your bot and put it here.
+#User=
+# Replace <telegram-bot> with the folder where your bot is located.
+# Suggested location: /opt/telegram-bot
+#ExecStart=<telegram-bot>/launch.sh
+
+[Install]
+WantedBy=multi-user.target
