@@ -15,7 +15,7 @@ function get_xkcd(id)
   if link_image:sub(0,2) == '//' then
     link_image = msg.text:sub(3,-1)
   end
-  return link_image, data.title
+  return link_image, data.title, data.alt
 end
 
 
@@ -25,21 +25,22 @@ function get_xkcd_random()
   return get_xkcd(i)
 end
 
-function send_title(cb_extra, success, result)
+function send_data(cb_extra, success, result)
   if success then
-    send_msg(cb_extra[1], cb_extra[2], ok_cb, false)
+    msg_to_send = "Title:" .. cb_extra[2] .. "\nAlt:"..cb_extra[3].."\nSource:"..cb_extra[4]
+    send_msg(cb_extra[1], msg_to_send, ok_cb, false)
   end
 end
 
 function run(msg, matches)
   local receiver = get_receiver(msg)
   if matches[1] == "xkcd" then
-    url, title = get_xkcd_random()
+    url, title, alt = get_xkcd_random()
   else
-    url, title = get_xkcd(matches[1])
+    url, title, alt = get_xkcd(matches[1])
   end
   file_path = download_to_file(url)
-  send_photo(receiver, file_path, send_title, {receiver, title})
+  send_photo(receiver, file_path, send_title, {receiver, title, alt, url})
   return false
 end
 
