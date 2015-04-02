@@ -42,7 +42,7 @@ function run(msg, matches)
     return getEsquilo()
   end
   
-  if matches[1] == "bind" then
+  if matches[1] == "bind" or matches[1] == "binds" then
     return getBind()
   end
 end
@@ -57,7 +57,8 @@ return {
   patterns = {
     "^[!#](espinhao)$",
     "^[!#](esquilo)$",
-    "^[!#](bind)$"
+    "^[!#](bind)$",
+    "^[!#](binds)$"
   },
   run = run
 }
