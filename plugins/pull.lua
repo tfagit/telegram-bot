@@ -2,7 +2,7 @@ do
 
 function run(msg, matches)
 	os.execute("cd ~/telegram-bot/; git pull")
-	return "O robô pode ter sido atualizado"
+	return "O robô pode ter sido atualizado (rode !plugins reload agora)"
 end
 
 return {
