@@ -28,17 +28,17 @@ TFA-Specific Bot Commands
         <tr>
             <td>binds.lua</td>
             <td>Shows random quotes from TF2 players</td>
-            <td>`!binds` (or `!bind`)<br>`!espinhao`<br>`!esquilo`</td>
+            <td><code>!binds</code> (or <code>!bind</code>)<br><code>!espinhao</code><br><code>!esquilo</code><br><code>!vacilao</code></td>
    	    </tr>
         <tr>
             <td>gui.lua</td>
             <td>Shows a message if a specific user sends too many messages in a row</td>
-            <td>Automatic, can be invoked manually with `!guii`</td>
+            <td>Automatic, can be invoked manually with <code>!guii</code></td>
         </tr>
         <tr>
             <td>pull.lua</td>
             <td>Pulls the latest git tree, updating the bot</td>
-            <td>`!pull`</td>
+            <td><code>!pull</code></td>
         </tr>
     </tbody>
 </table>
