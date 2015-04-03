@@ -7,7 +7,7 @@ function load_binds()
   local f = io.open(bind_file, 'r+')
   if f = nil then
     print "Não há arquivo de binds"
-    return
+    return nil
   end
   f:close()
   return loadfile(bind_file)()
