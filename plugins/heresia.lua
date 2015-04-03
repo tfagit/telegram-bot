@@ -75,8 +75,8 @@ return = {
   },
   patterns = {
     "[ts]ua mãe",
-    "ur mom".
-    "your mom".
+    "ur mom",
+    "your mom",
     "batata",
     "potato",
     "bataton",
