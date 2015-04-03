@@ -1,7 +1,9 @@
 telegram-bot
 ============
 
-A Telegram Bot based on plugins using [tg](https://github.com/vysheng/tg).
+A Telegram Bot based on plugins using [tg](https://github.com/vysheng/tg). 
+This is a fork of the [original bot](https://github.com/yagop/telegram-bot)
+with a few [TFA](http://tfats.tk)-specific plugins added in.
 
 Multimedia
 ----------
@@ -11,6 +13,36 @@ Multimedia
 - When user sends youtube URL, send to origin video image.
 
 ![http://i.imgur.com/0FGUvU0.png](http://i.imgur.com/0FGUvU0.png) ![http://i.imgur.com/zW7WWWt.png](http://i.imgur.com/zW7WWWt.png) ![http://i.imgur.com/zW7WWWt.png](http://i.imgur.com/kPK7paz.png)
+
+TFA-Specific Bot Commands
+-------------------------
+<table>
+    <thead>
+        <tr>
+            <td><strong>Name</strong></td>
+            <td><strong>Description</strong></td>
+            <td><strong>Usage</strong></td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>binds.lua</td>
+            <td>Shows random quotes from TF2 players</td>
+            <td>`!binds` (or `!bind`)<br>`!espinhao`<br>`!esquilo`</td>
+   	    </tr>
+        <tr>
+            <td>gui.lua</td>
+            <td>Shows a message if a specific user sends too many messages in a row</td>
+            <td>Automatic, can be invoked manually with `!guii`</td>
+        </tr>
+        <tr>
+            <td>pull.lua</td>
+            <td>Pulls the latest git tree, updating the bot</td>
+            <td>`!pull`</td>
+        </tr>
+    </tbody>
+</table>
+
 
 Bot Commands
 ------------
