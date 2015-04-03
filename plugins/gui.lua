@@ -26,8 +26,8 @@ function run(msg, matches)
 end
 
 return {
-  description = [[Pode mandar o Gui se fuder no seu lugar,\n
-      também manda ele calar a boca automaticamente\n
+  description = [[Pode mandar o Gui se fuder no seu lugar,
+      também manda ele calar a boca automaticamente
       id_gui deve ser setado no config.]],
   usage = "!guii: Retorna 'VAI SE FUDER, GUI'",
   patterns = {

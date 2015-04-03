@@ -90,10 +90,10 @@ end
 return {
   description = "Coleção de binds",
   usage = {
-    "[!/#]espinhao",
-    "[!/#]esquilo",
-    "[!/#]vacilao",
-    "[!/#]bind / [!/#]binds"
+    "!espinhao",
+    "!esquilo",
+    "!vacilao",
+    "!bind: Retorna um bind aleatório"
   },
   patterns = {
     "^[!#](espinhao)$",
