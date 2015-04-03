@@ -85,7 +85,7 @@ return {
     "batata",
     "potato",
     "bataton",
-    "^[!#](hereges)$"
+    "^[!#](hereges)$",
     "^[!#](hereges) (%d*)$"
   },
   run = run
