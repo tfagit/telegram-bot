@@ -5,7 +5,7 @@ local heresia_data
 
 function ler_heresia()
   local f = io.open(heresia_file, 'r+')
-  if f = nil then
+  if f == nil then
     print('Novo arquivo de heresia criado')
     serialize_to_file({ num_hereges = 0, dados = nil },heresia_file)
   else
