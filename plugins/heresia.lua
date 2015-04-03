@@ -35,9 +35,13 @@ function mostrar_hereges(num)
   end
 
   table.sort(hereges, sort_rank)
-
+  local cont_shown = 0
   for i, user in pairs(hereges) do
     msg_retorno = msg_retorno..user.print_name.."["..user.id.."]:"..user.cont.."\n"
+    cont_shown = cont_shown + 1
+    if cont_shown >= top_a_mostrar then
+      break
+    end
   end
   return msg_retorno
 end
@@ -67,7 +71,7 @@ function run(msg, matches)
   registrar_heresia(msg)
 end
 
-return = {
+return {
   description = "Detecta palavras heréticas",
   usage = { 
     "!hereges: retorna contagem de heresia para cada pessoa",

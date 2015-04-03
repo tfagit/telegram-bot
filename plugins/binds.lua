@@ -16,7 +16,7 @@ end
 binds_data = load_binds()
 
 function get_espinhao()
-  return (binds_data.espinhao[math.random(#binds_data.espinhao)])
+  return (binds_data.espinhao[math.random(#binds_data.espinhao)]))
 end
 
 function get_esquilo()
