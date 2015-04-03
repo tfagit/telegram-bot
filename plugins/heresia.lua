@@ -72,6 +72,7 @@ return = {
   usage = { 
     "!hereges: retorna contagem de heresia para cada pessoa",
     "!hereges [número]: retorna os top [número] hereges"
+  },
   patterns = {
     "[ts]ua mãe",
     "ur mom".
@@ -80,6 +81,7 @@ return = {
     "potato",
     "bataton",
     "^[!#](hereges) (%d*)"
-  }
+  },
+  run = run
 }
 end
