@@ -1,7 +1,7 @@
 ﻿do
 
-function getEspinhao()
-  local espinhaoTable = {
+function get_espinhao()
+  local espinhao_table = {
     "espinhao: mto fasil bota no easy",
     "épine de grande envergure: mpour fasil botte sur les facile",
     "big spike: mto fasil boot on easy",
@@ -10,19 +10,19 @@ function getEspinhao()
     "espignotti: boot obiettivo a medio termine Fasil il facile",
     "еспинхао: мто фасил бота но еасы цыка бляд"
   }
-  return(espinhaoTable[math.random(#espinhaoTable)])
+  return(espinhao_table[math.random(#espinhao_table)])
 end
 
-function getEsquilo()
+function get_esquilo()
   return "esquilo: foda é quando seu cachorro pula na tua cama e lambe teu pau com gosto de calabreza'"
 end
 
-function getMedico()
+function get_medico()
   return "*DEAD* Médico Racista : vacilao"
 end
 
-function getBind()
-  local bindTable = {
+function get_bind()
+  local bind_table = {
     "gangue do kaponei :  nem noé pra carregar tanto animal",
     "mymind. skull : VAMO RAPIDO preciso me masturbar exatamente 22:50", 
     "vigos: mais facil q dar a bunda", 
@@ -66,24 +66,24 @@ function getBind()
     "espinhao: mto fasil bota no easy",
     "*DEAD* Médico Racista : vacilao"
   }
-  return (bindTable[math.random(#bindTable)])
+  return (bind_table[math.random(#bind_table)])
 end
 
 function run(msg, matches)
   if matches[1] == "espinhao" then
-    return getEspinhao()
+    return get_espinhao()
   end
 
   if matches[1] == "esquilo" then
-    return getEsquilo()
+    return get_esquilo()
   end
     
   if matches[1] == "vacilao" then
-    return getMedico()
+    return get_medico()
   end
   
-  if matches[1] == "bind" or matches[1] == "binds" then
-    return getBind()
+  if matches[1] == "bind" then
+    return get_bind()
   end
 end
 
@@ -99,7 +99,7 @@ return {
     "^[!#](espinhao)$",
     "^[!#](esquilo)$",
     "^[!#](vacilao)$",
-    "^[!#](binds?)$"
+    "^[!#](bind)s?$"
   },
   run = run
 }
