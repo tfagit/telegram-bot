@@ -1,6 +1,5 @@
 ﻿do
 
-local socket = require('socket')
 local bind_file = './data/binds_data.lua'
 local binds_data
 
