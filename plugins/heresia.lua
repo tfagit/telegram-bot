@@ -1,5 +1,7 @@
 -- heresia.lua
 do
+
+local socket = require('socket')
 local heresia_file = './data/heresia.lua'
 local heresia_data
 
