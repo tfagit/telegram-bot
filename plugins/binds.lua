@@ -17,6 +17,10 @@ function getEsquilo()
   return "esquilo: foda é quando seu cachorro pula na tua cama e lambe teu pau com gosto de calabreza'"
 end
 
+function getMedico(){
+  return "*DEAD* Médico Racista : vacilao"
+}
+
 function getBind()
   local bindTable = {
     "gangue do kaponei :  nem noé pra carregar tanto animal",
@@ -59,7 +63,8 @@ function getBind()
     "Evil Ghost | : algm tem facalhão?", 
     "LrS! EiKO :  te metes con migo, te metes con la fiera",
     "esquilo: foda é quando seu cachorro pula na tua cama e lambe teu pau com gosto de calabreza'",
-    "espinhao: mto fasil bota no easy"
+    "espinhao: mto fasil bota no easy",
+    "*DEAD* Médico Racista : vacilao"
   }
   return (bindTable[math.random(#bindTable)])
 end
@@ -72,6 +77,10 @@ function run(msg, matches)
   if matches[1] == "esquilo" then
     return getEsquilo()
   end
+    
+  if matches[1] == "vacilao" then
+    return getMedico()
+  end
   
   if matches[1] == "bind" or matches[1] == "binds" then
     return getBind()
@@ -83,13 +92,14 @@ return {
   usage = {
     "[!/#]espinhao",
     "[!/#]esquilo",
-    "[!/#]bind"
+    "[!/#]vacilao",
+    "[!/#]bind / [!/#]binds"
   },
   patterns = {
     "^[!#](espinhao)$",
     "^[!#](esquilo)$",
-    "^[!#](bind)$",
-    "^[!#](binds)$"
+    "^[!#](vacilao)$"
+    "^[!#](binds?)$",
   },
   run = run
 }
