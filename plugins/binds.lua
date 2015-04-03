@@ -17,9 +17,9 @@ function getEsquilo()
   return "esquilo: foda é quando seu cachorro pula na tua cama e lambe teu pau com gosto de calabreza'"
 end
 
-function getMedico(){
+function getMedico()
   return "*DEAD* Médico Racista : vacilao"
-}
+end
 
 function getBind()
   local bindTable = {
