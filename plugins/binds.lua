@@ -1,6 +1,6 @@
 ﻿do
 
-local bind_file = '.data/binds_data.lua'
+local bind_file = './data/binds_data.lua'
 local binds_data
 
 function load_binds()
