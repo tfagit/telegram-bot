@@ -50,7 +50,7 @@ function registrar_heresia(msg)
   local id = msg.from.id
   local print_name = msg.from.print_name
   print (print_name..' cometeu heresia')
-  if heresia_data.dados[id] = nil then
+  if heresia_data.dados[id] == nil then
     heresia_data.num_hereges = heresia_data.num_hereges + 1
     heresia_data.dados[id] = {
       name = print_name,
