@@ -94,7 +94,7 @@ end
 
 -- Check if user can use the plugin
 function user_allowed(plugin, msg)
-  if plugin.privileged and not is_sudo(msg) then
+  if plugin.privileged and not is_sudo(msg.from.id) then
     return false
   end
   return true

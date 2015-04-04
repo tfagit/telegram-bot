@@ -168,11 +168,11 @@ function run_command(str)
 end
 
 -- User has priviledges
-function is_sudo(msg)
+function is_sudo(user_id)
   local var = false
   -- Check users id in config 
   for v,user in pairs(_config.sudo_users) do 
-    if user == msg.from.id then 
+    if user == user_id then 
       var = true 
     end
   end

@@ -51,7 +51,7 @@ local function event_close(owner, event_id)
     if _events.db[event_id] == nil then
         return "There's no such event."
     end
-    if _events.db[event_id].owner == owner.id then
+    if _events.db[event_id].owner == owner.id or is_sudo(owner.id) then
         _events.db[event_id] = nil
         save_file_events(_events, _file_events)
         return "Event " .. event_id .. " successfully closed."
@@ -148,6 +148,7 @@ local function event_list(user)
             output = output .. event.id .. ": " .. event.title .. " (Public)\n"
         end
     end
+    if output == "" then output = "No events available now. Be the first to create one!" end
     _send_msg("user#id"..user.id, output)
     return nil
 end
