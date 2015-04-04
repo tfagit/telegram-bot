@@ -201,6 +201,7 @@ local function event_broadcast(owner, event_id, message)
         return "There's no such event."
     end
     if event.owner == owner.id then
+        message = "Broadcast from event #" .. event_id .. " (\"" .. event.title .. "\"):\n" .. message
         for id, _ in pairs(event.participants) do
             _send_msg("user#id"..id, message)
         end
