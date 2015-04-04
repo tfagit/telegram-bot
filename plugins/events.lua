@@ -115,7 +115,7 @@ local function event_join(user, event_id)
             _events.db[event_id].invites[user.id] = nil
             _events.db[event_id].participants[user.id] = user.print_name
             save_file_events(_events, _file_events)
-            _send_msg("user#id".._events.db[event_id].owner, user.id.." has joined event #"..event_id)
+            _send_msg("user#id".._events.db[event_id].owner, user.print_name.." has joined event #"..event_id)
             return "You have successfully joined event " ..  event_id .. "!"
         end
     else
@@ -130,6 +130,7 @@ local function event_leave(user, event_id)
     if _events.db[event_id].participants[user.id] then
         _events.db[event_id].participants[user.id] = nil
         save_file_events(_events, _file_events)
+        _send_msg("user#id".._events.db[event_id].owner, user.print_name.." has left event #"..event_id)
         return "You have left the event."
     else
         return "You are not a participant of this event"
