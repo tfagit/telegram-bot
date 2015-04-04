@@ -50,7 +50,7 @@ _events = read_file_events(_file_events)
 
 local function event_help(user_id)
     local help_text = [[Under construction.]]
-    send_msg(user_id, help_text)
+    _send_msg(user_id, help_text)
     return nil
 end
  
@@ -152,7 +152,7 @@ local function event_broadcast(owner, event_id, message)
     end
     if _events.db[event_id].owner == owner then
         for key, _ in pairs(_events.db[event_id].participants) do
-            send_msg(key, message)
+            _send_msg(key, message)
         end
         return "Broadcast successfully delivered."
     else
@@ -171,7 +171,7 @@ local function event_list(user_id)
             output = output .. event.id .. ": " .. event.title .. " (Public)\n"
         end
     end
-    send_msg(user_id, output)
+    _send_msg(user_id, output)
     return nil
 end
 
@@ -179,7 +179,7 @@ local function event_info(user_id, event_id)
     event = _events.db[event_id]
     if event and 
         (event.private == false or event.participants[user_id] or event.invites[user_id]) then
-        send_msg(user_id, event.id .. ": " .. event.title .. "\n" .. event.description .. "\n")
+        _send_msg(user_id, event.id .. ": " .. event.title .. "\n" .. event.description .. "\n")
         return nil
     else
         return "This event is either private or non-existant."
