@@ -186,7 +186,7 @@ local function event_info(user_id, event_id)
     end
 end
 
-local commands = {
+_events_commands = {
     ["help"] = function(msg, matches)
         event_help(msg.from.id)
     end,
@@ -220,8 +220,8 @@ local commands = {
 }
 
 local function run(msg, matches)
-    if commands[matches[1]] then
-        return commands[matches[1]](msg, matches)
+    if _events_commands[matches[1]] then
+        return _events_commands[matches[1]](msg, matches)
     else
         return "Command not recognized. Type !event help for helpful information."
     end
