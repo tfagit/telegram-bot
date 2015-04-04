@@ -9,7 +9,7 @@ function read_file_events(location)
         serialize_to_file({last_id = 0, db = {}}, location)
     else
         print('Events loaded from ' .. location)
-        f:close()
+        file:close()
     end
     return loadfile(location) -- Parses content in file
 end
