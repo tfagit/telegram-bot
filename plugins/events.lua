@@ -61,7 +61,7 @@ local function event_create(owner, title, description, privacy)
         owner = owner.id,
         title = title,
         description = description,
-        participants = {[owner] = true},
+        participants = {[owner.id] = true},
         private = privacy == "private" and true or false,
         invites = {}
     }
