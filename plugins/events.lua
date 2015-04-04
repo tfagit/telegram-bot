@@ -61,7 +61,7 @@ local function event_create(owner, title, description, privacy)
         owner = owner.id,
         title = title,
         description = description,
-        participants = {[owner.id] = true},
+        participants = {[owner.id] = owner.print_name},
         private = privacy == "private" and true or false,
         invites = {}
     }
@@ -124,7 +124,7 @@ local function event_join(user, event_id)
             return "You are already a participant of this event."
         else
             _events.db[event_id].invites[user.id] = nil
-            _events.db[event_id].participants[user.id] = true
+            _events.db[event_id].participants[user.id] = user.print_name
             save_file_events(_events, _file_events)
             return "You have successfully joined event " ..  event_id .. "!"
         end
@@ -151,9 +151,8 @@ local function event_broadcast(owner, event_id, message)
         return "There's no such event."
     end
     if _events.db[event_id].owner == owner.id then
-        for key, _ in pairs(_events.db[event_id].participants) do
-            for k, v in pairs(user_info(key)) do print(k, v) end
-            send_msg(key, message)
+        for id, print_name in pairs(_events.db[event_id].participants) do
+            send_msg(print_name, message)
         end
         return "Broadcast successfully delivered."
     else
