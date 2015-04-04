@@ -18,29 +18,6 @@ function save_file_events(events, location)
     serialize_to_file(events, location)
 end
 
--- _events = {
---     last_id = 1231,
---     db = {
---         [1230] = {
---             id = 1230,
---             owner = 120938,
---             title = "titulo do evento",
---             description = "descricao do evento",
---             participants = [
---                 [120938] = true,
---                 [108730128753] = true,
---                 [1203894] = true
---             ],
---             private = true,
---             invites = [
---                 [12301823] = true,
---                 [102983] = true,
---                 [10284071] = true
---             ]
---         }
---     }
--- } 
-
 local _file_events = './data/events.lua'
 local _events
 
@@ -50,7 +27,7 @@ _events = read_file_events(_file_events)
 
 local function event_help(user)
     local help_text = [[Under construction.]]
-    send_msg(user.print_name, help_text)
+    _send_msg("user#id"..user.id, help_text)
     return nil
 end
  
@@ -124,7 +101,7 @@ local function event_join(user, event_id)
             return "You are already a participant of this event."
         else
             _events.db[event_id].invites[user.id] = nil
-            _events.db[event_id].participants[user.id] = user.print_name
+            _events.db[event_id].participants[user.id] = true
             save_file_events(_events, _file_events)
             return "You have successfully joined event " ..  event_id .. "!"
         end
@@ -151,8 +128,8 @@ local function event_broadcast(owner, event_id, message)
         return "There's no such event."
     end
     if _events.db[event_id].owner == owner.id then
-        for id, print_name in pairs(_events.db[event_id].participants) do
-            send_msg(print_name, message)
+        for id, _ in pairs(_events.db[event_id].participants) do
+            _send_msg("user#id"..id, message)
         end
         return "Broadcast successfully delivered."
     else
@@ -171,7 +148,7 @@ local function event_list(user)
             output = output .. event.id .. ": " .. event.title .. " (Public)\n"
         end
     end
-    send_msg(user.print_name, output)
+    _send_msg("user#id"..user.id, output)
     return nil
 end
 
@@ -179,7 +156,7 @@ local function event_info(user, event_id)
     event = _events.db[event_id]
     if event and 
         (event.private == false or event.participants[user.id] or event.invites[user.id]) then
-        send_msg(user.print_name, event.id .. ": " .. event.title .. "\n" .. event.description .. "\n")
+        _send_msg(user.id, event.id .. ": " .. event.title .. "\n" .. event.description .. "\n")
         return nil
     else
         return "This event is either private or non-existant."
