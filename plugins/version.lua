@@ -1,9 +1,9 @@
 do
 
 function run(msg, matches)
-  return 'Telegram Bot '.. VERSION .. [[ 
-  Checkout http://git.io/6jdjGg
-  GNU v2 license.]]
+  return 'telegram-bot v'.. VERSION .. [[ -tfa
+  Código-fonte: https://github.com/tfagit/telegram-bot
+  Este programa está disponível sob a licença GNU GPL v2.]]
 end
 
 return {
