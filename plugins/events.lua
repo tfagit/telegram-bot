@@ -191,7 +191,7 @@ _events_commands = {
         return event_help(msg.from)
     end,
     ["info"] = function(msg, matches)
-        return event_info(msg.from)
+        return event_info(msg.from, tonumber(matches[2]))
     end,
     ["create"] = function(msg, matches)
         return event_create(msg.from, matches[2], matches[3], matches[4])
