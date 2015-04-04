@@ -170,7 +170,7 @@ local function event_info(user, event_id)
     if event and 
         (event.private == false or event.participants[user.id] or event.invites[user.id]) then
         local message = "" .. event.id .. ": " .. event.title .. "\n" .. event.description .. "\n\nParticipants:\n"
-        for id, print_name in event.participants do
+        for id, print_name in pairs(event.participants) do
             message = message .. print_name .. " [" .. id .. "]\n"
         end
         _send_msg("user#id"..user.id, message)
