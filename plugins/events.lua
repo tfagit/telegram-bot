@@ -86,7 +86,7 @@ local function event_invite(owner, event_id, invitee_id)
             _events.db[event_id].invites[invitee_id] = true
             save_file_events(_events, _file_events)
             _send_msg("user#id"..invitee_id,
-                "You have been invited to \"" .. _events.db[event_id].title .. " (" .. event_id .. "). Type !event join " .. event_id .. " to accept your invite.")
+                owner.print_name .. " has invited you to \"" .. _events.db[event_id].title .. " (" .. event_id .. "). Type !event join " .. event_id .. " to accept your invite.")
             return "User " .. invitee_id .. " invited to the event."
         end
     else
@@ -103,7 +103,7 @@ local function event_join(user, event_id)
             return "You are already a participant of this event."
         else
             _events.db[event_id].invites[user.id] = nil
-            _events.db[event_id].participants[user.id] = true
+            _events.db[event_id].participants[user.id] = user.print_name
             save_file_events(_events, _file_events)
             return "You have successfully joined event " ..  event_id .. "!"
         end
@@ -143,11 +143,11 @@ local function event_list(user)
     local output = ""
     for event_id, event in pairs(_events.db) do
         if event.participants[user.id] then
-            output = output .. event.id .. ": " .. event.title .. " (Joined!)\n"
+            output = output .. event.id .. ": " .. event.title .. " (Joined!) [" .. #(event.participants) .. "]\n"
         elseif event.invites[user.id] then
-            output = output .. event.id .. ": " .. event.title .. " (Invite pending)\n"
+            output = output .. event.id .. ": " .. event.title .. " (Invite pending) [" .. #(event.participants) .. "]\n"
         elseif event.private == false then
-            output = output .. event.id .. ": " .. event.title .. " (Public)\n"
+            output = output .. event.id .. ": " .. event.title .. " (Public) [" .. #(event.participants) .. "]\n"
         end
     end
     if output == "" then output = "No events available now. Be the first to create one!" end
@@ -159,7 +159,11 @@ local function event_info(user, event_id)
     event = _events.db[event_id]
     if event and 
         (event.private == false or event.participants[user.id] or event.invites[user.id]) then
-        _send_msg("user#id"..user.id, event.id .. ": " .. event.title .. "\n" .. event.description .. "\n")
+        local message = "" .. event.id .. ": " .. event.title .. "\n" .. event.description .. "\n\nParticipants:\n"
+        for id, print_name in event.participants do
+            message = message .. print_name .. " [" .. id .. "]\n"
+        end
+        _send_msg("user#id"..user.id, )
         return nil
     else
         return "This event is either private or non-existant."
