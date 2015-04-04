@@ -163,7 +163,7 @@ local function event_info(user, event_id)
         for id, print_name in event.participants do
             message = message .. print_name .. " [" .. id .. "]\n"
         end
-        _send_msg("user#id"..user.id, )
+        _send_msg("user#id"..user.id, message)
         return nil
     else
         return "This event is either private or non-existant."
