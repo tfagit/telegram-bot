@@ -384,12 +384,3 @@ function format_http_params(params, is_get)
   end
   return str
 end
-
--- Number of elements in a table
-function table_count(table)
-  local count = 0
-  for k,v in pairs(table) do
-    count = count + 1
-  end
-  return count
-end

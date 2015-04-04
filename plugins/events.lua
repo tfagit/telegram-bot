@@ -1,5 +1,15 @@
 do
 
+-- Utility
+-- Number of elements in a table
+local function table_count(table)
+    local count = 0
+    for k,v in pairs(table) do
+        count = count + 1
+    end
+    return count
+end
+
 -- FILE HANDLING
 
 function read_file_events(location)
