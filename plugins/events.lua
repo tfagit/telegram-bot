@@ -12,6 +12,7 @@ end
 
 -- FILE HANDLING
 
+-- Creates blank events.lua file if non-existent or loads existing file
 function read_file_events(location)
     local file = io.open(location, "r+")
     if file == nil then
@@ -24,6 +25,7 @@ function read_file_events(location)
     return loadfile(location)() -- Parses content in file
 end
 
+-- Saves changes to file
 function save_file_events(events, location)
     serialize_to_file(events, location)
 end
@@ -35,12 +37,52 @@ _events = read_file_events(_file_events)
 
 -- ACTUAL FUNCTIONALITY
 
+help_text = [[TEAMSPEAK-BOT EVENT HANDLER PLUGIN by @Blekwave
+
+Create events, invite your friends and handle your scheduling and notification needs through Telegram!
+
+Usage:
+!events
+Lists all events you can see - public events, events to which you've been invited and events which you've joined.
+
+!event info (event_id)
+Fetches detailed information about a given event.
+
+!event create ("event_name") ("event_description") [private]
+Creates a new event with a custom title and a custom description. These must be between quotes. May take an optional 'private' parameter (no quotes necessary). If this is the case, only invited members may join it.
+
+!event close (event_id)
+Closes an event. Can only be done by the owner or by someone with super user permissions.
+
+!event edit description (event_id) ("new_description")
+Edits an event's description. (Description must be between quotes)
+
+!event invite (event_id) (user_id)
+Invites a user to an event.
+
+!event join (event_id)
+Joins an existing event. Public events can always be joined. Private events may be joined if the user has been invited previously by the owner.
+
+!event leave (event_id)
+Leaves an event.
+
+!event broadcast (event_id) ("message")
+Sends a message to all participants.
+
+!event help
+Prints this help dialog.
+
+Note: user ids may be gotten by typing !stats, and event ids can be obtained through the !events command.
+
+]]
+
+-- Sends help dialog to user
 local function event_help(user)
-    local help_text = [[Under construction.]]
     _send_msg("user#id"..user.id, help_text)
     return nil
 end
- 
+
+-- Creates event with given title and description
 local function event_create(owner, title, description, privacy)
     _events.last_id = _events.last_id + 1
     local new_event = {
@@ -57,11 +99,13 @@ local function event_create(owner, title, description, privacy)
     return "Event created! ID: " .. tostring(new_event.id)
 end
 
+-- Closes an event
 local function event_close(owner, event_id)
-    if _events.db[event_id] == nil then
+    event = _events.db[event_id]
+    if event == nil then
         return "There's no such event."
     end
-    if _events.db[event_id].owner == owner.id or is_sudo(owner.id) then
+    if event.owner == owner.id or is_sudo(owner.id) then
         _events.db[event_id] = nil
         save_file_events(_events, _file_events)
         return "Event " .. event_id .. " successfully closed."
@@ -70,12 +114,14 @@ local function event_close(owner, event_id)
     end
 end
 
+-- Edits an event's description
 local function event_edit_description(owner, event_id, description)
-    if _events.db[event_id] == nil then
+    event = _events.db[event_id]
+    if event == nil then
         return "There's no such event."
     end
-    if _events.db[event_id].owner == owner.id then
-        _events.db[event_id].description = description
+    if event.owner == owner.id then
+        event.description = description
         save_file_events(_events, _file_events)
         return "Description updated."
     else
@@ -83,20 +129,24 @@ local function event_edit_description(owner, event_id, description)
     end
 end
 
+-- Invites a user to an event
 local function event_invite(owner, event_id, invitee_id)
-    if _events.db[event_id] == nil then
+    event = _events.db[event_id]
+    if event == nil then
         return "There's no such event."
     end
-    if _events.db[event_id].owner == owner.id then
-        if _events.db[event_id].participants[invitee_id] then
+    if event.owner == owner.id then
+        if event.participants[invitee_id] then
             return "This user is already a participant of this event."
-        elseif _events.db[event_id].invites[invitee_id] then
+        elseif event.invites[invitee_id] then
             return "This user has already been invited to the event."
         else
-            _events.db[event_id].invites[invitee_id] = true
+            event.invites[invitee_id] = true
             save_file_events(_events, _file_events)
             _send_msg("user#id"..invitee_id,
-                owner.print_name .. " has invited you to \"" .. _events.db[event_id].title .. " (" .. event_id .. "). Type !event join " .. event_id .. " to accept your invite.")
+                owner.print_name .. " has invited you to \"" .. event.title
+                .. " (" .. event_id .. "). Type !event join " .. event_id 
+                .. " to accept your invite.")
             return "User " .. invitee_id .. " invited to the event."
         end
     else
@@ -104,18 +154,20 @@ local function event_invite(owner, event_id, invitee_id)
     end
 end
 
+-- User tries to join an event
 local function event_join(user, event_id)
-    if _events.db[event_id] == nil then
+    event = _events.db[event_id]
+    if event == nil then
         return "There's no such event."
     end
-    if _events.db[event_id].private == false or _events.db[event_id].invites[user.id] then
-        if _events.db[event_id].participants[user.id] then
+    if event.private == false or event.invites[user.id] then
+        if event.participants[user.id] then
             return "You are already a participant of this event."
         else
-            _events.db[event_id].invites[user.id] = nil
-            _events.db[event_id].participants[user.id] = user.print_name
+            event.invites[user.id] = nil
+            event.participants[user.id] = user.print_name
             save_file_events(_events, _file_events)
-            _send_msg("user#id".._events.db[event_id].owner, user.print_name.." has joined event #"..event_id)
+            _send_msg("user#id"..event.owner, user.print_name.." has joined event #"..event_id)
             return "You have successfully joined event " ..  event_id .. "!"
         end
     else
@@ -123,26 +175,33 @@ local function event_join(user, event_id)
     end
 end
 
+-- Leaves an event
 local function event_leave(user, event_id)
-    if _events.db[event_id] == nil then
+    event = _events.db[event_id]
+    if event == nil then
         return "There's no such event."
     end
-    if _events.db[event_id].participants[user.id] then
-        _events.db[event_id].participants[user.id] = nil
+    if event.participants[user.id] then
+        if event.owner == user_.id then
+            return "The owner may not leave directly. Use !event close <id> instead."
+        end
+        event.participants[user.id] = nil
         save_file_events(_events, _file_events)
-        _send_msg("user#id".._events.db[event_id].owner, user.print_name.." has left event #"..event_id)
+        _send_msg("user#id"..event.owner, user.print_name.." has left event #"..event_id)
         return "You have left the event."
     else
         return "You are not a participant of this event"
     end
 end
 
+-- Sends a message to all event members
 local function event_broadcast(owner, event_id, message)
-    if _events.db[event_id] == nil then
+    event = _events.db[event_id]
+    if event == nil then
         return "There's no such event."
     end
-    if _events.db[event_id].owner == owner.id then
-        for id, _ in pairs(_events.db[event_id].participants) do
+    if event.owner == owner.id then
+        for id, _ in pairs(event.participants) do
             _send_msg("user#id"..id, message)
         end
         return "Broadcast successfully delivered."
@@ -151,6 +210,7 @@ local function event_broadcast(owner, event_id, message)
     end
 end
 
+-- Lists all events
 local function event_list(user)
     local output = ""
     for event_id, event in pairs(_events.db) do
@@ -167,6 +227,7 @@ local function event_list(user)
     return nil
 end
 
+-- Sends detailed info about the event to the user
 local function event_info(user, event_id)
     event = _events.db[event_id]
     if event and 
