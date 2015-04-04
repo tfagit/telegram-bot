@@ -48,9 +48,9 @@ _events = read_file_events(_file_events)
 
 -- ACTUAL FUNCTIONALITY
 
-local function event_help(user_id)
+local function event_help(user)
     local help_text = [[Under construction.]]
-    _send_msg(user_id, help_text)
+    send_msg(user.print_name, help_text)
     return nil
 end
  
@@ -58,10 +58,10 @@ local function event_create(owner, title, description, privacy)
     _events.last_id = _events.last_id + 1
     local new_event = {
         id = _events.last_id,
-        owner = owner,
+        owner = owner.id,
         title = title,
         description = description,
-        participants = {},
+        participants = {[owner] = true},
         private = privacy == "private" and true or false,
         invites = {}
     }
@@ -74,7 +74,7 @@ local function event_close(owner, event_id)
     if _events.db[event_id] == nil then
         return "There's no such event."
     end
-    if _events.db[event_id].owner == owner then
+    if _events.db[event_id].owner == owner.id then
         _events.db[event_id] = nil
         save_file_events(_events, _file_events)
         return "Event " .. event_id .. " successfully closed."
@@ -87,7 +87,7 @@ local function event_edit_description(owner, event_id, description)
     if _events.db[event_id] == nil then
         return "There's no such event."
     end
-    if _events.db[event_id].owner == owner then
+    if _events.db[event_id].owner == owner.id then
         _events.db[event_id].description = description
         save_file_events(_events, _file_events)
         return "Description updated."
@@ -100,7 +100,7 @@ local function event_invite(owner, event_id, invitee_id)
     if _events.db[event_id] == nil then
         return "There's no such event."
     end
-    if _events.db[event_id].owner == owner then
+    if _events.db[event_id].owner == owner.id then
         if _events.db[event_id].participants[invitee_id] then
             return "This user is already a participant of this event."
         elseif _events.db[event_id].invites[invitee_id] then
@@ -115,16 +115,16 @@ local function event_invite(owner, event_id, invitee_id)
     end
 end
 
-local function event_join(user_id, event_id)
+local function event_join(user, event_id)
     if _events.db[event_id] == nil then
         return "There's no such event."
     end
-    if _events.db[event_id].private == false or _events.db[event_id].invites[user_id] then
-        if _events.db[event_id].participants[user_id] then
+    if _events.db[event_id].private == false or _events.db[event_id].invites[user.id] then
+        if _events.db[event_id].participants[user.id] then
             return "You are already a participant of this event."
         else
-            _events.db[event_id].invites[user_id] = nil
-            _events.db[event_id].participants[user_id] = true
+            _events.db[event_id].invites[user.id] = nil
+            _events.db[event_id].participants[user.id] = true
             save_file_events(_events, _file_events)
             return "You have successfully joined event " ..  event_id .. "!"
         end
@@ -133,12 +133,12 @@ local function event_join(user_id, event_id)
     end
 end
 
-local function event_leave(user_id, event_id)
+local function event_leave(user, event_id)
     if _events.db[event_id] == nil then
         return "There's no such event."
     end
-    if _events.db[event_id].participants[user_id] then
-        _events.db[event_id].participants[user_id] = nil
+    if _events.db[event_id].participants[user.id] then
+        _events.db[event_id].participants[user.id] = nil
         save_file_events(_events, _file_events)
         return "You have left the event."
     else
@@ -150,9 +150,10 @@ local function event_broadcast(owner, event_id, message)
     if _events.db[event_id] == nil then
         return "There's no such event."
     end
-    if _events.db[event_id].owner == owner then
+    if _events.db[event_id].owner == owner.id then
         for key, _ in pairs(_events.db[event_id].participants) do
-            _send_msg(key, message)
+            for k, v in pairs(user_info(key)) do print(k, v) end
+            send_msg(key, message)
         end
         return "Broadcast successfully delivered."
     else
@@ -160,26 +161,26 @@ local function event_broadcast(owner, event_id, message)
     end
 end
 
-local function event_list(user_id)
+local function event_list(user)
     local output = ""
     for event_id, event in pairs(_events.db) do
-        if event.participants[user_id] then
+        if event.participants[user.id] then
             output = output .. event.id .. ": " .. event.title .. " (Joined!)\n"
-        elseif event.invites[user_id] then
+        elseif event.invites[user.id] then
             output = output .. event.id .. ": " .. event.title .. " (Invite pending)\n"
         elseif event.private == false then
             output = output .. event.id .. ": " .. event.title .. " (Public)\n"
         end
     end
-    _send_msg(user_id, output)
+    send_msg(user.print_name, output)
     return nil
 end
 
-local function event_info(user_id, event_id)
+local function event_info(user, event_id)
     event = _events.db[event_id]
     if event and 
-        (event.private == false or event.participants[user_id] or event.invites[user_id]) then
-        _send_msg(user_id, event.id .. ": " .. event.title .. "\n" .. event.description .. "\n")
+        (event.private == false or event.participants[user.id] or event.invites[user.id]) then
+        send_msg(user.print_name, event.id .. ": " .. event.title .. "\n" .. event.description .. "\n")
         return nil
     else
         return "This event is either private or non-existant."
@@ -188,34 +189,34 @@ end
 
 _events_commands = {
     ["help"] = function(msg, matches)
-        return event_help(msg.from.id)
+        return event_help(msg.from)
     end,
     ["info"] = function(msg, matches)
-        return event_info(msg.from.id)
+        return event_info(msg.from)
     end,
     ["create"] = function(msg, matches)
-        return event_create(msg.from.id, matches[2], matches[3], matches[4])
+        return event_create(msg.from, matches[2], matches[3], matches[4])
     end,
     ["close"] = function(msg, matches)
-        return event_close(msg.from.id, tonumber(matches[2]))
+        return event_close(msg.from, tonumber(matches[2]))
     end,
     ["edit description"] = function(msg, matches)
-        return event_edit_description(msg.from.id, tonumber(matches[2]), matches[3])
+        return event_edit_description(msg.from, tonumber(matches[2]), matches[3])
     end,
     ["invite"] = function(msg, matches)
-        return event_invite(msg.from.id, tonumber(matches[2]), tonumber(matches[3]))
+        return event_invite(msg.from, tonumber(matches[2]), tonumber(matches[3]))
     end,
     ["join"] = function(msg, matches)
-        return event_join(msg.from.id, tonumber(matches[2]))
+        return event_join(msg.from, tonumber(matches[2]))
     end,
     ["leave"] = function(msg, matches)
-        return event_leave(msg.from.id, tonumber(matches[2]))
+        return event_leave(msg.from, tonumber(matches[2]))
     end,
     ["broadcast"] = function(msg, matches)
-        return event_broadcast(msg.from.id, tonumber(matches[2]), matches[3])
+        return event_broadcast(msg.from, tonumber(matches[2]), matches[3])
     end,
     ["events"] = function(msg, matches)
-        return event_list(msg.from.id)
+        return event_list(msg.from)
     end
 }
 
