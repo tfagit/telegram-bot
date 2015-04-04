@@ -85,6 +85,8 @@ local function event_invite(owner, event_id, invitee_id)
         else
             _events.db[event_id].invites[invitee_id] = true
             save_file_events(_events, _file_events)
+            _send_msg("user#id"..invitee_id,
+                "You have been invited to \"" .. _events.db[event_id].title .. " (" .. event_id .. "). Type !event join " .. event_id .. " to accept your invite.")
             return "User " .. invitee_id .. " invited to the event."
         end
     else
@@ -157,7 +159,7 @@ local function event_info(user, event_id)
     event = _events.db[event_id]
     if event and 
         (event.private == false or event.participants[user.id] or event.invites[user.id]) then
-        _send_msg(user.id, event.id .. ": " .. event.title .. "\n" .. event.description .. "\n")
+        _send_msg("user#id"..user.id, event.id .. ": " .. event.title .. "\n" .. event.description .. "\n")
         return nil
     else
         return "This event is either private or non-existant."
