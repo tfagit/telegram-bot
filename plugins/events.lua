@@ -53,8 +53,9 @@ local function event_help(user_id)
 end
  
 local function event_create(owner, title, description, privacy)
+    _events.last_id = _events.last_id + 1
     local new_event = {
-        id = _events.last_id = _events.last_id + 1,
+        id = _events.last_id,
         owner = owner,
         title = title,
         description = description,
