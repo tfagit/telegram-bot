@@ -11,7 +11,7 @@ function read_file_events(location)
         print('Events loaded from ' .. location)
         file:close()
     end
-    return loadfile(location) -- Parses content in file
+    return loadfile(location)() -- Parses content in file
 end
 
 function save_file_events(events, location)
