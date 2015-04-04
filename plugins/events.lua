@@ -143,11 +143,11 @@ local function event_list(user)
     local output = ""
     for event_id, event in pairs(_events.db) do
         if event.participants[user.id] then
-            output = output .. event.id .. ": " .. event.title .. " (Joined!) [" .. #(event.participants) .. "]\n"
+            output = output .. event.id .. ": " .. event.title .. " (Joined!) [" .. table_count(event.participants) .. "]\n"
         elseif event.invites[user.id] then
-            output = output .. event.id .. ": " .. event.title .. " (Invite pending) [" .. #(event.participants) .. "]\n"
+            output = output .. event.id .. ": " .. event.title .. " (Invite pending) [" .. table_count(event.participants) .. "]\n"
         elseif event.private == false then
-            output = output .. event.id .. ": " .. event.title .. " (Public) [" .. #(event.participants) .. "]\n"
+            output = output .. event.id .. ": " .. event.title .. " (Public) [" .. table_count(event.participants) .. "]\n"
         end
     end
     if output == "" then output = "No events available now. Be the first to create one!" end
