@@ -188,34 +188,34 @@ end
 
 _events_commands = {
     ["help"] = function(msg, matches)
-        event_help(msg.from.id)
+        return event_help(msg.from.id)
     end,
     ["info"] = function(msg, matches)
-        event_info(msg.from.id)
+        return event_info(msg.from.id)
     end,
     ["create"] = function(msg, matches)
-        event_create(msg.from.id, matches[2], matches[3], matches[4])
+        return event_create(msg.from.id, matches[2], matches[3], matches[4])
     end,
     ["close"] = function(msg, matches)
-        event_close(msg.from.id, tonumber(matches[2]))
+        return event_close(msg.from.id, tonumber(matches[2]))
     end,
     ["edit description"] = function(msg, matches)
-        event_edit_description(msg.from.id, tonumber(matches[2]), matches[3])
+        return event_edit_description(msg.from.id, tonumber(matches[2]), matches[3])
     end,
     ["invite"] = function(msg, matches)
-        event_invite(msg.from.id, tonumber(matches[2]), tonumber(matches[3]))
+        return event_invite(msg.from.id, tonumber(matches[2]), tonumber(matches[3]))
     end,
     ["join"] = function(msg, matches)
-        event_join(msg.from.id, tonumber(matches[2]))
+        return event_join(msg.from.id, tonumber(matches[2]))
     end,
     ["leave"] = function(msg, matches)
-        event_leave(msg.from.id, tonumber(matches[2]))
+        return event_leave(msg.from.id, tonumber(matches[2]))
     end,
     ["broadcast"] = function(msg, matches)
-        event_broadcast(msg.from.id, tonumber(matches[2]), matches[3])
+        return event_broadcast(msg.from.id, tonumber(matches[2]), matches[3])
     end,
     ["events"] = function(msg, matches)
-        event_list(msg.from.id)
+        return event_list(msg.from.id)
     end
 }
 
