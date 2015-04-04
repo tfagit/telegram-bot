@@ -42,7 +42,9 @@ end
 -- } 
 
 local _file_events = './data/events.lua'
-local _events = read_file_events(_file_events)
+local _events
+
+_events = read_file_events(_file_events)
 
 -- ACTUAL FUNCTIONALITY
 
