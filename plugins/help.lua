@@ -59,7 +59,7 @@ function run(msg, matches)
   else
     message = telegram_help()
   end
-  _send_msg("used#id" .. msg.from.id, message)
+  _send_msg("user#id" .. msg.from.id, message)
   return nil
 end
 
