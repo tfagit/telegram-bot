@@ -79,7 +79,7 @@ local function event_create(owner, title, description, privacy)
         owner = owner.id,
         title = title,
         description = description,
-        participants = {[owner.id] = owner.print_name},
+        participants = {[tostring(owner.id)] = owner.print_name},
         private = privacy == "private" and true or false,
         invites = {}
     }
