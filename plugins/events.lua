@@ -110,7 +110,7 @@ local function event_edit_description(owner, event_id, description)
     event = get_event(event_id)
     if not event then return "No such event." end
     if event.owner == owner.id then
-        _mongo:update(edb, {description = description})
+        _mongo:update(edb, {id = event_id}, {description = description})
         return "Description updated."
     else
         return "You're not allowed to do that."
