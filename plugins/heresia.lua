@@ -24,7 +24,7 @@ function mostrar_hereges(num)
   if num_hereges == 0 then
     return "Não há hereges. Por enquanto."
   end
-  local msg_retorno = ""
+  local msg_retorno = "Heresias Cometidas: \n"
   local top_a_mostrar = 0
   if num == nil or num > num_hereges then
     top_a_mostrar = num_hereges
@@ -39,7 +39,7 @@ function mostrar_hereges(num)
   table.sort(hereges, sort_rank)
   local cont_shown = 0
   for i, user in pairs(hereges) do
-    msg_retorno = msg_retorno..user.name.."["..user.user_id.."]: "..user.cont.." heresia cometidas\n"
+    msg_retorno = msg_retorno..user.name.."["..user.user_id.."]: "..user.cont.."\n"
     cont_shown = cont_shown + 1
     if cont_shown >= top_a_mostrar then
       break
