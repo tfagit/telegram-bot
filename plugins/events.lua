@@ -248,7 +248,7 @@ local function event_info(user, event_id)
     if event and 
         (event.private == false or event.participants[user_id_str] or event.invites[user_id_str]) then
         local message = "" .. event.id .. ": " .. event.title .. " (" .. 
-            event.participants[user_id_str] and "Joined" or event.invites[user_id_str] and "Invited" or "Private" ..
+            (event.participants[user_id_str] and "Joined" or event.invites[user_id_str] and "Invited" or "Private") ..
             ")\n" .. event.description .. "\n\nParticipants:\n"
         for id, print_name in pairs(event.participants) do
             if print_name then
