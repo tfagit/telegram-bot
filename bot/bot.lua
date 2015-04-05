@@ -20,7 +20,7 @@ function on_binlog_replay_end()
   -- See plugins/ping.lua as an example for cron
 
   _config = load_config()
-  _mongo = mongo_connect('localhost')
+  _mongo = assert(mongo_connect('localhost'))
 
   -- load plugins
   plugins = {}
@@ -30,9 +30,9 @@ end
 function mongo_connect(address)
   local mongo = require("mongo")
   local db = assert(mongo.Connection.New(true), "Unable to create MongoDB object.")
-  assert(db:connect(address), "Unable to connect to dbDB server.")
+  assert(db:connect(address), "Unable to connect to DB server.")
   if not _config.bot_db then _config.bot_db = "tgbot" end
-  return db
+  return db, "Unable to connect to MongoDB"
 end
 
 

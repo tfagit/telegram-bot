@@ -13,17 +13,17 @@ end
 local function get_next_id()
     local counters = _config.bot_db .. ".counters"
     local q = _mongo:query(counters, {_id = "events"})
-    id = q:next().value
-    if id then
-        _mongo:update(counters, {_id = "events"}, {value = id + 1})
-        return id
+    p = q:next()
+    if p then
+        _mongo:update(counters, {_id = "events"}, {["$inc"] = {value = 1}})
+        return p.id
     else
         _mongo:insert(counters, {_id = "events", value = 1})
         return 1
     end
 end
 
-local edb = _config.bot_db .. ".events" -- "path to events namespace"
+edb = _config.bot_db .. ".events" -- "path to events namespace"
 
 -- ACTUAL FUNCTIONALITY
 
@@ -89,10 +89,11 @@ end
 
 -- Closes an event
 local function event_close(owner, event_id)
-    event = _mongo:query(edb, {id = event_id}):next()
+    local event = _mongo:query(edb, {id = event_id})
     if not event then
         return "There's no such event."
     end
+    event = event:next()
     if event.owner == owner.id or is_sudo(owner.id) then
         _mongo:remove(edb, {id = event_id})
         return "Event " .. event_id .. " successfully closed."
@@ -103,10 +104,11 @@ end
 
 -- Edits an event's description
 local function event_edit_description(owner, event_id, description)
-    event = _mongo:query(edb, {id = event_id}):next()
+    local event = _mongo:query(edb, {id = event_id})
     if not event then
         return "There's no such event."
     end
+    event = event:next()
     if event.owner == owner.id then
         _mongo:update(edb, {description = description})
         return "Description updated."
@@ -117,10 +119,11 @@ end
 
 -- Invites a user to an event
 local function event_invite(owner, event_id, invitee_id)
-    event = _mongo:query(edb, {id = event_id}):next()
+    local event = _mongo:query(edb, {id = event_id})
     if not event then
         return "There's no such event."
     end
+    event = event:next()
     if event.owner == owner.id then
         local inv_id_str = tostring(invitee_id)
         if event.participants[inv_id_str] then
@@ -145,10 +148,11 @@ end
 
 -- User tries to join an event
 local function event_join(user, event_id)
-    event = _mongo:query(edb, {id = event_id}):next()
+    local event = _mongo:query(edb, {id = event_id})
     if not event then
         return "There's no such event."
     end
+    event = event:next()
     local user_id_str = tostring(user.id)
     if event.private == false or event.invites[user_id_str] then
         if event.participants[user_id_str] then
@@ -173,7 +177,7 @@ end
 
 -- Leaves an event
 local function event_leave(user, event_id)
-    event = _mongo:query(edb, {id = event_id}):next()
+    local event = _mongo:query(edb, {id = event_id})
     if not event then
         return "There's no such event."
     end
@@ -195,10 +199,11 @@ end
 
 -- Sends a message to all event members
 local function event_broadcast(owner, event_id, message)
-    event = _mongo:query(edb, {id = event_id}):next()
+    local event = _mongo:query(edb, {id = event_id})
     if not event then
         return "There's no such event."
     end
+    event = event:next()
     if event.owner == owner.id then
         message = "Broadcast from event #" .. event_id .. " (\"" .. event.title .. "\"):\n" .. message
         for id, name in pairs(event.participants) do
@@ -233,7 +238,11 @@ end
 
 -- Sends detailed info about the event to the user
 local function event_info(user, event_id)
-    event = _mongo:query(edb, {id = event_id}):next()
+    local event = _mongo:query(edb, {id = event_id})
+    if not event then
+        return "There is no such event"
+    end
+    event = event:next()
     local user_id_str = tostring(user.id)
     if event and 
         (event.private == false or event.participants[user_id_str] or event.invites[user_id_str]) then
