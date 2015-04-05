@@ -39,7 +39,7 @@ function mostrar_hereges(num)
   table.sort(hereges, sort_rank)
   local cont_shown = 0
   for i, user in pairs(hereges) do
-    msg_retorno = msg_retorno..user.print_name.."["..user.user_id.."]:"..user.cont.."\n"
+    msg_retorno = msg_retorno..user.name.."["..user.user_id.."]:"..user.cont.."\n"
     cont_shown = cont_shown + 1
     if cont_shown >= top_a_mostrar then
       break
