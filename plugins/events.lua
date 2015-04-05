@@ -220,9 +220,9 @@ end
 -- Lists all events
 local function event_list(user)
     local output = ""
-    local events = _mongo:query(edb, {})
+    local q = _mongo:query(edb, {})
     local user_id_str = tostring(user.id)
-    for event_id, event in pairs(events) do
+    for event in q:results() do
         if event.participants[user_id_str] then
             output = output .. event.id .. ": " .. event.title .. " (Joined!) [" .. table_count(event.participants) .. "]\n"
         elseif event.invites[user_id_str] then
