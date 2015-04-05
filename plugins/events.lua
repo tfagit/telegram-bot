@@ -16,7 +16,7 @@ local function get_next_id()
     p = q:next()
     if p then
         _mongo:update(counters, {_id = "events"}, {["$inc"] = {value = 1}})
-        return p.id
+        return p.value
     else
         _mongo:insert(counters, {_id = "events", value = 1})
         return 1
