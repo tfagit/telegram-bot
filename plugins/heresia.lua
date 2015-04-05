@@ -18,14 +18,14 @@ end
 heresia_data = ler_heresia()
 
 function mostrar_hereges(num)
-  local num_hereges = heresia_data.num_hereges
+  local num_hereges = tonumber(heresia_data.num_hereges)
   local hereges = heresia_data.dados
   if num_hereges == 0 then
     return "Não há hereges. Por enquanto."
   end
   local msg_retorno = ""
   local top_a_mostrar = 0
-  if num == nil or num > num_hereges then
+  if num == nil or num > tonum_hereges then
     top_a_mostrar = num_hereges
   else
     top_a_mostrar = num
