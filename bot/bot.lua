@@ -28,12 +28,11 @@ function on_binlog_replay_end()
 end
 
 function mongo_connect(address)
-  local mongo = assert(mongo.Connection.New(auto_reconnect = true),
-    "Unable to create MongoDB object.")
-  assert(mongo:connect(address),
-    "Unable to connect to MongoDB server.")
+  local mongo = require("mongo")
+  local db = assert(mongo.Connection.New(true), "Unable to create MongoDB object.")
+  assert(db:connect(address), "Unable to connect to dbDB server.")
   if not _config.bot_db then _config.bot_db = "tgbot" end
-  return mongo
+  return db
 end
 
 

@@ -128,11 +128,14 @@ local function event_invite(owner, event_id, invitee_id)
         elseif event.invites[inv_id_str] then
             return "This user has already been invited to the event."
         else
-            _mongo:update(edb .. ".invites", {[invitee_id] = true})
+            _mongo:update(edb, {id = event_id},
+                {['$set'] = {
+                    ["invites." .. inv_id_str] = true
+                }})
             _send_msg("user#id"..inv_id_str,
-                owner.print_name .. " has invited you to \"" .. event.title
-                .. " (" .. event_id .. "). Type !event join " .. event_id 
-                .. " to accept your invite.")
+                owner.print_name .. " has invited you to \"" .. event.title ..
+                    " (" .. event_id .. "). Type !event join " .. event_id ..
+                    " to accept your invite.")
             return "User " .. inv_id_str .. " invited to the event."
         end
     else
@@ -152,7 +155,14 @@ local function event_join(user, event_id)
             return "You are already a participant of this event."
         else
             _mongo:update(edb, {id = event_id},
-                {invites[user_id] = false, participants[user_id] = user.print_name})
+                {
+                    ["$set"] = {
+                        ["participants." .. user_id_str] = user.print_name
+                    },
+                    ["$unset"] = {
+                        ["invites." .. user_id_str] = ""
+                    }
+                })
             _send_msg("user#id"..event.owner, user.print_name.." has joined event #"..event_id)
             return "You have successfully joined event " ..  event_id .. "!"
         end
@@ -167,12 +177,16 @@ local function event_leave(user, event_id)
     if not event then
         return "There's no such event."
     end
-    if event.participants[tostring(user.id)] then
+    local user_id_str = tostring(user.id)
+    if event.participants[user_id_str] then
         if event.owner == user.id then
             return "The owner may not leave directly. Use !event close <id> instead."
         end
-        _mongo:update(edb, {id = event_id}, {participants[user.id] = false})
-        _send_msg("user#id"..event.owner, user.print_name.." has left event #".. event_id)
+        _mongo:update(edb, {id = event_id},
+            {["$unset"] = {
+                ["participants." .. user_id_str] = ""
+            }})
+        _send_msg("user#id" .. event.owner, user.print_name .. " has left event #" .. event_id)
         return "You have left the event."
     else
         return "You are not a participant of this event"
