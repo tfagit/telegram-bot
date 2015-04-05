@@ -10,30 +10,20 @@ local function table_count(table)
     return count
 end
 
--- FILE HANDLING
-
--- Creates blank events.lua file if non-existent or loads existing file
-function read_file_events(location)
-    local file = io.open(location, "r+")
-    if file == nil then
-        print('Created new events table at ' .. location)
-        serialize_to_file({last_id = 0, db = {}}, location)
+local function get_next_id()
+    local counters = _config.bot_db .. ".counters"
+    local q = _mongo:query(counters, {_id = "events"})
+    id = q:next().value
+    if id then
+        _mongo:update(counters, {_id = "events"}, {value = id + 1})
+        return id
     else
-        print('Events loaded from ' .. location)
-        file:close()
+        _mongo:insert(counters, {_id = "events", value = 1})
+        return 1
     end
-    return loadfile(location)() -- Parses content in file
 end
 
--- Saves changes to file
-function save_file_events(events, location)
-    serialize_to_file(events, location)
-end
-
-local _file_events = './data/events.lua'
-local _events
-
-_events = read_file_events(_file_events)
+local edb = _config.bot_db .. ".events" -- "path to events namespace"
 
 -- ACTUAL FUNCTIONALITY
 
@@ -84,9 +74,8 @@ end
 
 -- Creates event with given title and description
 local function event_create(owner, title, description, privacy)
-    _events.last_id = _events.last_id + 1
     local new_event = {
-        id = _events.last_id,
+        id = get_next_id(),
         owner = owner.id,
         title = title,
         description = description,
@@ -94,20 +83,18 @@ local function event_create(owner, title, description, privacy)
         private = privacy == "private" and true or false,
         invites = {}
     }
-    _events.db[new_event.id] = new_event
-    save_file_events(_events, _file_events)
+    _mongo:insert(edb, new_event)
     return "Event created! ID: " .. tostring(new_event.id)
 end
 
 -- Closes an event
 local function event_close(owner, event_id)
-    event = _events.db[event_id]
-    if event == nil then
+    event = _mongo:query(edb, {id = event_id}):next()
+    if not event then
         return "There's no such event."
     end
     if event.owner == owner.id or is_sudo(owner.id) then
-        _events.db[event_id] = nil
-        save_file_events(_events, _file_events)
+        _mongo:remove(edb, {id = event_id})
         return "Event " .. event_id .. " successfully closed."
     else
         return "You're not allowed to do that."
@@ -116,13 +103,12 @@ end
 
 -- Edits an event's description
 local function event_edit_description(owner, event_id, description)
-    event = _events.db[event_id]
-    if event == nil then
+    event = _mongo:query(edb, {id = event_id}):next()
+    if not event then
         return "There's no such event."
     end
     if event.owner == owner.id then
-        event.description = description
-        save_file_events(_events, _file_events)
+        _mongo:update(edb, {description = description})
         return "Description updated."
     else
         return "You're not allowed to do that."
@@ -131,23 +117,23 @@ end
 
 -- Invites a user to an event
 local function event_invite(owner, event_id, invitee_id)
-    event = _events.db[event_id]
-    if event == nil then
+    event = _mongo:query(edb, {id = event_id}):next()
+    if not event then
         return "There's no such event."
     end
     if event.owner == owner.id then
-        if event.participants[invitee_id] then
+        local inv_id_str = tostring(invitee_id)
+        if event.participants[inv_id_str] then
             return "This user is already a participant of this event."
-        elseif event.invites[invitee_id] then
+        elseif event.invites[inv_id_str] then
             return "This user has already been invited to the event."
         else
-            event.invites[invitee_id] = true
-            save_file_events(_events, _file_events)
-            _send_msg("user#id"..invitee_id,
+            _mongo:update(edb .. ".invites", {[invitee_id] = true})
+            _send_msg("user#id"..inv_id_str,
                 owner.print_name .. " has invited you to \"" .. event.title
                 .. " (" .. event_id .. "). Type !event join " .. event_id 
                 .. " to accept your invite.")
-            return "User " .. invitee_id .. " invited to the event."
+            return "User " .. inv_id_str .. " invited to the event."
         end
     else
         return "You're not allowed to do that."
@@ -156,17 +142,17 @@ end
 
 -- User tries to join an event
 local function event_join(user, event_id)
-    event = _events.db[event_id]
-    if event == nil then
+    event = _mongo:query(edb, {id = event_id}):next()
+    if not event then
         return "There's no such event."
     end
-    if event.private == false or event.invites[user.id] then
-        if event.participants[user.id] then
+    local user_id_str = tostring(user.id)
+    if event.private == false or event.invites[user_id_str] then
+        if event.participants[user_id_str] then
             return "You are already a participant of this event."
         else
-            event.invites[user.id] = nil
-            event.participants[user.id] = user.print_name
-            save_file_events(_events, _file_events)
+            _mongo:update(edb, {id = event_id},
+                {invites[user_id] = false, participants[user_id] = user.print_name})
             _send_msg("user#id"..event.owner, user.print_name.." has joined event #"..event_id)
             return "You have successfully joined event " ..  event_id .. "!"
         end
@@ -177,17 +163,16 @@ end
 
 -- Leaves an event
 local function event_leave(user, event_id)
-    event = _events.db[event_id]
-    if event == nil then
+    event = _mongo:query(edb, {id = event_id}):next()
+    if not event then
         return "There's no such event."
     end
-    if event.participants[user.id] then
-        if event.owner == user_.id then
+    if event.participants[tostring(user.id)] then
+        if event.owner == user.id then
             return "The owner may not leave directly. Use !event close <id> instead."
         end
-        event.participants[user.id] = nil
-        save_file_events(_events, _file_events)
-        _send_msg("user#id"..event.owner, user.print_name.." has left event #"..event_id)
+        _mongo:update(edb, {id = event_id}, {participants[user.id] = false})
+        _send_msg("user#id"..event.owner, user.print_name.." has left event #".. event_id)
         return "You have left the event."
     else
         return "You are not a participant of this event"
@@ -196,14 +181,16 @@ end
 
 -- Sends a message to all event members
 local function event_broadcast(owner, event_id, message)
-    event = _events.db[event_id]
-    if event == nil then
+    event = _mongo:query(edb, {id = event_id}):next()
+    if not event then
         return "There's no such event."
     end
     if event.owner == owner.id then
         message = "Broadcast from event #" .. event_id .. " (\"" .. event.title .. "\"):\n" .. message
-        for id, _ in pairs(event.participants) do
-            _send_msg("user#id"..id, message)
+        for id, name in pairs(event.participants) do
+            if name then
+                _send_msg("user#id"..id, message)
+            end
         end
         return "Broadcast successfully delivered."
     else
@@ -214,30 +201,37 @@ end
 -- Lists all events
 local function event_list(user)
     local output = ""
-    for event_id, event in pairs(_events.db) do
-        if event.participants[user.id] then
+    local events = _mongo:query(edb, {})
+    local user_id_str = tostring(user.id)
+    for event_id, event in pairs(events) do
+        if event.participants[user_id_str] then
             output = output .. event.id .. ": " .. event.title .. " (Joined!) [" .. table_count(event.participants) .. "]\n"
-        elseif event.invites[user.id] then
+        elseif event.invites[user_id_str] then
             output = output .. event.id .. ": " .. event.title .. " (Invite pending) [" .. table_count(event.participants) .. "]\n"
         elseif event.private == false then
             output = output .. event.id .. ": " .. event.title .. " (Public) [" .. table_count(event.participants) .. "]\n"
         end
     end
     if output == "" then output = "No events available now. Be the first to create one!" end
-    _send_msg("user#id"..user.id, output)
+    _send_msg("user#id" .. user_id_str, output)
     return nil
 end
 
 -- Sends detailed info about the event to the user
 local function event_info(user, event_id)
-    event = _events.db[event_id]
+    event = _mongo:query(edb, {id = event_id}):next()
+    local user_id_str = tostring(user.id)
     if event and 
-        (event.private == false or event.participants[user.id] or event.invites[user.id]) then
-        local message = "" .. event.id .. ": " .. event.title .. "\n" .. event.description .. "\n\nParticipants:\n"
+        (event.private == false or event.participants[user_id_str] or event.invites[user_id_str]) then
+        local message = "" .. event.id .. ": " .. event.title .. " (" .. 
+            event.participants[user_id_str] and "Joined" or event.invites[user_id_str] and "Invited" or "Private" ..
+            ")\n" .. event.description .. "\n\nParticipants:\n"
         for id, print_name in pairs(event.participants) do
-            message = message .. print_name .. " [" .. id .. "]\n"
+            if print_name then
+                message = message .. print_name .. " [" .. id .. "]\n"
+            end
         end
-        _send_msg("user#id"..user.id, message)
+        _send_msg("user#id" .. user_id_str, message)
         return nil
     else
         return "This event is either private or non-existant."
