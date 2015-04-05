@@ -181,6 +181,7 @@ local function event_leave(user, event_id)
     if not event then
         return "There's no such event."
     end
+    event = event:next()
     local user_id_str = tostring(user.id)
     if event.participants[user_id_str] then
         if event.owner == user.id then
