@@ -40,8 +40,7 @@ function run(msg, matches)
   else
     url, title, alt, comic_url = get_xkcd(matches[1])
   end
-  file_path = download_to_file(url)
-  send_photo_from_url(receiver, file_path, send_data, {receiver, title, alt, comic_url})
+  send_photo_from_url(receiver, url, send_data, {receiver, title, alt, comic_url})
   return false
 end
 
