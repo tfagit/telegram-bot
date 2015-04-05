@@ -2,7 +2,7 @@
 do
 
 local xml = require "xml"
-local query_url = "http://api.wolframalpha.com/v2/query?format=image&appid="..config.wolf_appid.."&input="
+local query_url = "http://api.wolframalpha.com/v2/query?format=image&appid=".._config.wolf_appid.."&input="
 
 function run(msg, matches)
   if matches[2] == nil then
@@ -31,7 +31,7 @@ return {
   },
   patterns = {
     "^[!#]wolfram (.*)$",
-    "^[!#]= (.*)$"  
+    "^[!#]= (.*)$" 
   },
   run = run
 }
