@@ -53,11 +53,14 @@ function telegram_help( )
 end
 
 function run(msg, matches)
+  local message
   if matches[1] == "help md" then
-    return html_help()
+    message = html_help()
   else
-    return telegram_help()
+    message = telegram_help()
   end
+  _send_msg("used#id" .. msg.from.id, message)
+  return nil
 end
 
 return {
