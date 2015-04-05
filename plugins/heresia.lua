@@ -18,6 +18,7 @@ end
 heresia_data = ler_heresia()
 
 function mostrar_hereges(num)
+  local num = tonumber(num)
   local num_hereges = tonumber(heresia_data.num_hereges)
   local hereges = heresia_data.dados
   if num_hereges == 0 then
@@ -25,7 +26,7 @@ function mostrar_hereges(num)
   end
   local msg_retorno = ""
   local top_a_mostrar = 0
-  if num == nil or num > tonum_hereges then
+  if num == nil or num > num_hereges then
     top_a_mostrar = num_hereges
   else
     top_a_mostrar = num
