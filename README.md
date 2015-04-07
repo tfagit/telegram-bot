@@ -1,7 +1,6 @@
 telegram-bot 
 ============
 
-<<<<<<< HEAD
 A Telegram Bot based on plugins using [tg](https://github.com/vysheng/tg). 
 This is a fork of the [original bot](https://github.com/yagop/telegram-bot)
 with a few [TFA](http://tfats.tk)-specific plugins added in.
