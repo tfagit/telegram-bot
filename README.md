@@ -30,15 +30,30 @@ TFA-Specific Bot Commands
             <td>Shows random quotes from TF2 players</td>
             <td><code>!binds</code> (or <code>!bind</code>)<br><code>!espinhao</code><br><code>!esquilo</code><br><code>!vacilao</code></td>
    	    </tr>
+   	    <tr>
+   	        <td>events.lua</td>
+   	        <td>Schedule events and invite your contacts to them</td>
+   	        <td><code>!event [...]</code> (see <code>!event help</code> for full usage)</td>
+   	    </tr>
         <tr>
             <td>gui.lua</td>
             <td>Shows a message if a specific user sends too many messages in a row</td>
             <td>Automatic, can be invoked manually with <code>!guii</code></td>
         </tr>
         <tr>
+            <td>heresia.lua</td>
+            <td>Logs users who say naughty things</td>
+            <td><code>!hereges</code></td>
+        </tr>
+        <tr>
             <td>pull.lua</td>
             <td>Pulls the latest git tree, updating the bot</td>
             <td><code>!pull</code></td>
+        </tr>
+        <tr>
+            <td>wolfram.lua</td>
+            <td>Sends a query to <a href="https://wolframalpha.com">Wolfram Alpha</a> and replies with results</td>
+            <td><code>!wolfram</code><br><code>!=</code></td>
         </tr>
     </tbody>
 </table>
