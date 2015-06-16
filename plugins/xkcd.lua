@@ -8,6 +8,11 @@ function get_last_id()
 end
 
 function get_xkcd(id)
+  local last = get_last_id()
+  if id <= 0 and id > 0-last then
+    id = last+id  
+  end
+  
   local comic_url = "http://xkcd.com/"..id
   local res,code  = http.request(comic_url.."/info.0.json")
   if code ~= 200 then return "HTTP ERROR" end
