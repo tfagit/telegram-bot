@@ -57,8 +57,8 @@ return {
   usage = {"!xkcd (id): Send an xkcd image and title. If not id, send a random one"},
   patterns = {
     "^[!#](xkcd)$",
-    "^[!#]xkcd (%d+)",
-    "xkcd.com/(%d+)"
+    "^[!#]xkcd (-?%d+)",
+    "xkcd.com/(-?%d+)"
   }, 
   run = run 
 }
