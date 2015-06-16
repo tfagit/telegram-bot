@@ -9,8 +9,11 @@ end
 
 function get_xkcd(id)
   local last = get_last_id()
-  if id <= 0 and id > 0-last then
-    id = last+id  
+
+  local value = tonumber(id)
+  -- Negative numbers get the nth last comic
+  if value <= 0 and last - value > 0 then
+    id = tostring(last + value)
   end
   
   local comic_url = "http://xkcd.com/"..id
