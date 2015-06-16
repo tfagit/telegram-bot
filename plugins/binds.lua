@@ -27,6 +27,10 @@ function get_vacilao()
   return binds_data.vacilao
 end
 
+function get_kaponei()
+  return binds_data.kaponei
+end
+
 function get_bind()
   return (binds_data.binds[math.random(#(binds_data.binds))])
 end
@@ -44,6 +48,10 @@ function run(msg, matches)
     return get_vacilao()
   end
   
+  if matches[1] == "kaponei" then
+    return get_kaponei()
+  end
+  
   if matches[1] == "bind" then
     return get_bind()
   end
@@ -55,12 +63,14 @@ return {
     "!espinhao",
     "!esquilo",
     "!vacilao",
+    "!kaponei",
     "!bind: Retorna um bind aleatório"
   },
   patterns = {
     "^[!#](espinhao)$",
     "^[!#](esquilo)$",
     "^[!#](vacilao)$",
+    "^[!#](kaponei)$",
     "^[!#](bind)s?$"
   },
   run = run
