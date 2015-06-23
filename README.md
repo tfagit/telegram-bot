@@ -28,7 +28,7 @@ TFA-Specific Bot Commands
         <tr>
             <td>binds.lua</td>
             <td>Shows random quotes from TF2 players</td>
-            <td><code>!binds</code> (or <code>!bind</code>)<br><code>!espinhao</code><br><code>!esquilo</code><br><code>!vacilao</code></td>
+            <td><code>!binds</code> (or <code>!bind</code>)<br><code>!espinhao</code><br><code>!esquilo</code><br><code>!vacilao</code><br><code>!kaponei</code></td>
    	    </tr>
    	    <tr>
    	        <td>events.lua</td>
