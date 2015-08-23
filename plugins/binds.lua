@@ -35,11 +35,11 @@ function get_assis()
   return binds_data.assis
 end
 
-function get_cobretti(){
+function get_cobretti()
   return binds_data.cobretti
 end
 
-function get_sapequinha(){
+function get_sapequinha()
   return binds_data.sapequinha
 end
 
