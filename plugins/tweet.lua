@@ -1,20 +1,22 @@
 local OAuth = require "OAuth"
 
-local consumer_key = ""
-local consumer_secret = ""
-local access_token = ""
-local access_token_secret = ""
-
 local twitter_url = "https://api.twitter.com/1.1/statuses/user_timeline.json"
 
-local client = OAuth.new(consumer_key,
-                         consumer_secret,
-                         { RequestToken = "https://api.twitter.com/oauth/request_token",
-                           AuthorizeUser = {"https://api.twitter.com/oauth/authorize", method = "GET"},
-                           AccessToken = "https://api.twitter.com/oauth/access_token"},
-                         { OAuthToken = access_token,
-                           OAuthTokenSecret = access_token_secret})
+local twitter_config = load_from_file('data/twitter.lua', {
+    -- DON'T EDIT HERE.
+    consumer_key = "", consumer_secret = "",
+    access_token = "", access_token_secret = ""
+})
 
+local client = OAuth.new(twitter_config.consumer_key, twitter_config.consumer_secret, {
+    RequestToken = "https://api.twitter.com/oauth/request_token",
+    AuthorizeUser = {"https://api.twitter.com/oauth/authorize", method = "GET"},
+    AccessToken = "https://api.twitter.com/oauth/twitter_config.access_token"
+
+}, {
+    OAuthToken = twitter_config.access_token,
+    OAuthTokenSecret = twitter_config.access_token_secret
+})
 
 local function send_generics_from_url_callback(cb_extra, success, result)
    -- cb_extra is a table containing receiver, urls and remove_path
@@ -108,16 +110,16 @@ local function send_all_files(receiver, urls)
 end
 
 local function check_keys()
-   if consumer_key:isempty() then
+   if twitter_config.consumer_key:isempty() then
       return "Twitter Consumer Key is empty, write it in plugins/tweet.lua"
    end
-   if consumer_secret:isempty() then
+   if twitter_config.consumer_secret:isempty() then
       return "Twitter Consumer Secret is empty, write it in plugins/tweet.lua"
    end
-   if access_token:isempty() then
+   if twitter_config.access_token:isempty() then
       return "Twitter Access Token is empty, write it in plugins/tweet.lua"
    end
-   if access_token_secret:isempty() then
+   if twitter_config.access_token_secret:isempty() then
       return "Twitter Access Token Secret is empty, write it in plugins/tweet.lua"
    end
    return ""
