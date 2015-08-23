@@ -90,6 +90,9 @@ local function get_stats_status( msg )
 end
 
 local function run(msg, matches)
+  if not stats then
+    _stats = read_file_stats()
+  end
   if matches[1] == "stats" then -- Hack
         return get_stats_status(msg)
   else 
