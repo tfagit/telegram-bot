@@ -359,7 +359,6 @@ Bot Commands
       <td>Sends YouTube info and image.</td>
       <td></td>
     </tr>
->>>>>>> 893002a993a8928fa9fbe62301e94d8cde5b6cb7
   </tbody>
 </table>
 
