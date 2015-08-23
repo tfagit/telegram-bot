@@ -46,12 +46,10 @@ local function help_all()
   return ret
 end
 
-
 local function run(msg, matches)
-  local message
-  if matches[1] == "help" then
+  if matches[1] == "!help" then
     message = telegram_help()
-  elseif matches[1] == "all" then
+  elseif matches[1] == "!help all" then
     message = help_all()
   else 
     message = plugin_help(matches[1])
@@ -59,7 +57,7 @@ local function run(msg, matches)
       message = telegram_help()
     end
   end
-  _send_msg("user#id" .. msg.from.id, message)
+  send_large_msg(get_receiver(msg), message)
   return nil
 end
 
@@ -71,9 +69,9 @@ return {
     "!help [plugin name]: Commands for that plugin."
   },
   patterns = {
-    "^[!#](help)$",
-    "^[!#]help (all)$",
-    "^[!#]help (.+)$"
+    "^!help$",
+    "^!help all",
+    "^!help (.+)"
   }, 
   run = run 
 }

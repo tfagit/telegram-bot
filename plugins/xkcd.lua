@@ -53,11 +53,11 @@ function run(msg, matches)
 end
 
 return {
-  description = "Send comic images from xkcd", 
+  description = "Send comic images from xkcd",
   usage = {"!xkcd (id): Send an xkcd image and title. If not id, send a random one"},
   patterns = {
-    "^[!#](xkcd)$",
-    "^[!#]xkcd (-?%d+)",
+    "^!(xkcd)$",
+    "^!xkcd (-?%d+)",
     "xkcd.com/(-?%d+)"
   }, 
   run = run 

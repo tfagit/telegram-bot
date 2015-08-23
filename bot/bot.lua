@@ -1,13 +1,27 @@
+package.path = package.path .. ';.luarocks/share/lua/5.2/?.lua'
+  ..';.luarocks/share/lua/5.2/?/init.lua'
+package.cpath = package.cpath .. ';.luarocks/lib/lua/5.2/?.so'
+
 require("./bot/utils")
 
-VERSION = '0.10.1'
+VERSION = '0.13.1'
 
 -- This function is called when tg receive a msg
 function on_msg_receive (msg)
+  if not started then
+    return
+  end
+
+  local receiver = get_receiver(msg)
+
   -- vardump(msg)
+  msg = pre_process_service_msg(msg)
   if msg_valid(msg) then
     msg = pre_process_msg(msg)
-    match_plugins(msg)
+    if msg then
+      match_plugins(msg)
+      mark_read(receiver, ok_cb, false)
+    end
   end
 end
 
@@ -15,9 +29,9 @@ function ok_cb(extra, success, result)
 end
 
 function on_binlog_replay_end()
-  started = 1
+  started = true
   postpone (cron_plugins, false, 60*5.0)
-  -- See plugins/ping.lua as an example for cron
+  -- See plugins/isup.lua as an example for cron
 
   _config = load_config()
   _mongo = assert(mongo_connect('localhost'))
@@ -37,28 +51,75 @@ end
 
 
 function msg_valid(msg)
-  -- Dont process outgoing messages
+  -- Don't process outgoing messages
   if msg.out then
-    print("Not valid, msg from us")
+    print('\27[36mNot valid: msg from us\27[39m')
     return false
   end
+
+  -- Before bot was started
   if msg.date < now then
-    print("Not valid, old msg")
+    print('\27[36mNot valid: old msg\27[39m')
     return false
   end
+
   if msg.unread == 0 then
-    print("Not valid, readed")
+    print('\27[36mNot valid: readed\27[39m')
     return false
   end
+
+  if not msg.to.id then
+    print('\27[36mNot valid: To id not provided\27[39m')
+    return false
+  end
+
+  if not msg.from.id then
+    print('\27[36mNot valid: From id not provided\27[39m')
+    return false
+  end
+
+  if msg.from.id == our_id then
+    print('\27[36mNot valid: Msg from our id\27[39m')
+    return false
+  end
+
+  if msg.to.type == 'encr_chat' then
+    print('\27[36mNot valid: Encrypted chat\27[39m')
+    return false
+  end
+
+  if msg.from.id == 777000 then
+    print('\27[36mNot valid: Telegram message\27[39m')
+    return false
+  end
+
   return true
 end
 
+--
+function pre_process_service_msg(msg)
+   if msg.service then
+      local action = msg.action or {type=""}
+      -- Double ! to discriminate of normal actions
+      msg.text = "!!tgservice " .. action.type
 
-function do_lex(msg)
-  -- Plugins which implements lex.
-  for name, plugin in pairs(plugins) do
-    if plugin.lex ~= nil then
-      msg = plugin.lex(msg)
+      -- wipe the data to allow the bot to read service messages
+      if msg.out then
+         msg.out = false
+      end
+      if msg.from.id == our_id then
+         msg.from.id = 0
+      end
+   end
+   return msg
+end
+
+-- Apply plugin.pre_process function
+function pre_process_msg(msg)
+  for name,plugin in pairs(plugins) do
+    if plugin.pre_process and msg then
+      print('Preprocess', name)
+      msg = plugin.pre_process(msg)
     end
   end
 
@@ -68,63 +129,56 @@ end
 -- Go over enabled plugins patterns.
 function match_plugins(msg)
   for name, plugin in pairs(plugins) do
-    match_plugin(plugin, msg)
+    match_plugin(plugin, name, msg)
   end
 end
 
-function match_plugin(plugin, msg)
+-- Check if plugin is on _config.disabled_plugin_on_chat table
+local function is_plugin_disabled_on_chat(plugin_name, receiver)
+  local disabled_chats = _config.disabled_plugin_on_chat
+  -- Table exists and chat has disabled plugins
+  if disabled_chats and disabled_chats[receiver] then
+    -- Checks if plugin is disabled on this chat
+    for disabled_plugin,disabled in pairs(disabled_chats[receiver]) do
+      if disabled_plugin == plugin_name and disabled then
+        local warning = 'Plugin '..disabled_plugin..' is disabled on this chat'
+        print(warning)
+        send_msg(receiver, warning, ok_cb, false)
+        return true
+      end
+    end
+  end
+  return false
+end
+
+function match_plugin(plugin, plugin_name, msg)
   local receiver = get_receiver(msg)
 
-  -- Go over patterns. If one matches is enought.
+  -- Go over patterns. If one matches it's enough.
   for k, pattern in pairs(plugin.patterns) do
-    -- print(msg.text, pattern)
-    matches = { string.match(msg.text, pattern) }
-    if matches[1] then
-      mark_read(receiver, ok_cb, false)
-      print("  matches", pattern)
+    local matches = match_pattern(pattern, msg.text)
+    if matches then
+      print("msg matches: ", pattern)
+
+      if is_plugin_disabled_on_chat(plugin_name, receiver) then
+        return nil
+      end
       -- Function exists
-      if plugin.run ~= nil then
+      if plugin.run then
         -- If plugin is for privileged users only
-        if not user_allowed(plugin, msg) then
-          local text = 'This plugin requires privileged user'
-          send_msg(receiver, text, ok_cb, false)
-        else
-          -- Send the returned text by run function.
-          result = plugin.run(msg, matches)
-          if result ~= nil then
-            _send_msg(receiver, result)
+        if not warns_user_not_allowed(plugin, msg) then
+          local result = plugin.run(msg, matches)
+          if result then
+            send_large_msg(receiver, result)
           end
         end
       end
-      -- One matches
+      -- One patterns matches
       return
     end
   end
 end
 
--- Check if user can use the plugin
-function user_allowed(plugin, msg)
-  if plugin.privileged and not is_sudo(msg.from.id) then
-    return false
-  end
-  return true
-end
-
---Apply lex and other text.
-function pre_process_msg(msg)
-
-  if msg.text == nil then
-    -- Not a text message, make text the same as what tg shows so
-    -- we can match on it. Maybe a plugin activated my media type.
-    if msg.media ~= nil then
-      msg.text = '['..msg.media.type..']'
-    end
-  end
-
-  msg = do_lex(msg)
-
-  return msg
-end
 
 -- If text is longer than 4096 chars, send multiple msg.
 -- https://core.telegram.org/method/messages.sendMessage
@@ -149,10 +203,10 @@ function save_config( )
 end
 
 -- Returns the config from config.lua file.
--- If file doesnt exists, create it.
+-- If file doesn't exist, create it.
 function load_config( )
   local f = io.open('./data/config.lua', "r")
-  -- If config.lua doesnt exists
+  -- If config.lua doesn't exist
   if not f then
     print ("Created new config file: data/config.lua")
     create_config()
@@ -168,7 +222,7 @@ end
 
 -- Create a basic config.json file and saves it.
 function create_config( )
-  -- A simple config with basic plugins and ourserves as priviled user
+  -- A simple config with basic plugins and ourselves as privileged user
   config = {
     enabled_plugins = {
       "9gag",
@@ -180,11 +234,13 @@ function create_config( )
       "google",
       "gps",
       "help",
+      "id",
       "images",
       "img_google",
       "location",
       "media",
       "plugins",
+      "channels",
       "set",
       "stats",
       "time",
@@ -192,7 +248,8 @@ function create_config( )
       "weather",
       "xkcd",
       "youtube" },
-    sudo_users = {our_id}  
+    sudo_users = {our_id},
+    disabled_channels = {}
   }
   serialize_to_file(config, './data/config.lua')
   print ('saved config into ./data/config.lua')
@@ -221,8 +278,17 @@ end
 function load_plugins()
   for k, v in pairs(_config.enabled_plugins) do
     print("Loading plugin", v)
-    local t = loadfile("plugins/"..v..'.lua')()
-    plugins[v] = t
+
+    local ok, err =  pcall(function()
+      local t = loadfile("plugins/"..v..'.lua')()
+      plugins[v] = t
+    end)
+
+    if not ok then
+      print('\27[31mError loading plugin '..v..'\27[39m')
+      print('\27[31m'..err..'\27[39m')
+    end
+
   end
 end
 
@@ -244,3 +310,4 @@ end
 our_id = 0
 now = os.time()
 math.randomseed(now)
+started = false

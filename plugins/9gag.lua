@@ -24,13 +24,12 @@ end
 local function run(msg, matches)
   local receiver = get_receiver(msg)
   local url, title = get_9GAG()
-  local file_path = download_to_file(url)
-  _send_photo(receiver, file_path, send_title, {receiver, title})
+  send_photo_from_url(receiver, url, send_title, {receiver, title})
   return false
 end
 
 return {
-  description = "9GAG for telegram",
+  description = "9GAG for Telegram",
   usage = "!9gag: Send random image from 9gag",
   patterns = {"^!9gag$"},
   run = run

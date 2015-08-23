@@ -97,7 +97,7 @@ end
 local function event_close(owner, event_id)
     event = get_event(event_id)
     if not event then return "No such event." end
-    if event.owner == owner.id or is_sudo(owner.id) then
+    if event.owner == owner.id or is_sudo_id(owner.id) then
         _mongo:remove(edb, {id = event_id})
         return "Event " .. event_id .. " successfully closed."
     else
@@ -312,5 +312,4 @@ return {
     },
     run = run
 }
-
 end
