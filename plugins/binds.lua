@@ -88,7 +88,7 @@ return {
     "!esquilo",
     "!vacilao",
     "!kaponei",
-	"!assis",
+    "!assis",
     "!cobretti",
     "!sapequinha",
     "!bind: Retorna um bind aleatório"
@@ -98,7 +98,7 @@ return {
     "^[!#](esquilo)$",
     "^[!#](vacilao)$",
     "^[!#](kaponei)$",
-	"^[!#](assis)$",
+    "^[!#](assis)$",
     "^[!#](cobretti)$",
     "^[!#](sapequinha)$",
     "^[!#](bind)s?$"
