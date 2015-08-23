@@ -3,3 +3,4 @@ data/
 bot/config.lua
 *.sublime-project
 *.sublime-workspace
+.luarocks
