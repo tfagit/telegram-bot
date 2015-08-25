@@ -30,6 +30,7 @@ return {
   patterns = {
    "!set ([^%s]+) (.+)$"
   }, 
-  run = run 
+  run = run,
+  privileged = true
 }
 

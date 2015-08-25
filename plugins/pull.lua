@@ -11,7 +11,8 @@ return {
   patterns = {
     "^[!#]pull$"
   }, 
-  run = run 
+  run = run,
+  privileged = true
 }
 
 end
