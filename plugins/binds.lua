@@ -55,27 +55,27 @@ function run(msg, matches)
   if matches[1] == "esquilo" then
     return get_esquilo()
   end
-    
+
   if matches[1] == "vacilao" then
     return get_vacilao()
   end
-  
+
   if matches[1] == "kaponei" then
     return get_kaponei()
   end
-  
+
   if matches[1] == "assis" then
     return get_assis()
   end
-  
+
   if matches[1] == "cobretti" then
     return get_cobretti()
   end
-  
+
   if matches[1] == "sapequinha" then
     return get_sapequinha()
   end
-  
+
   if matches[1] == "bind" then
     return get_bind()
   end
