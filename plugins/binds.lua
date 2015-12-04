@@ -47,6 +47,10 @@ function get_bind()
   return (binds_data.binds[math.random(#(binds_data.binds))])
 end
 
+function get_bond()
+  return (binds_data.bonds[math.random(#(binds_data.bonds))])
+end
+
 function run(msg, matches)
   if matches[1] == "espinhao" then
     return get_espinhao()
@@ -79,6 +83,10 @@ function run(msg, matches)
   if matches[1] == "bind" then
     return get_bind()
   end
+
+  if matches[1] == "bond" then
+    return get_bond()
+  end
 end
 
 return {
@@ -91,7 +99,8 @@ return {
     "!assis",
     "!cobretti",
     "!sapequinha",
-    "!bind: Retorna um bind aleatório"
+    "!bind: Retorna um bind aleatório",
+    "!bond: Retorna um bond aleatório"
   },
   patterns = {
     "^[!#](espinhao)$",
@@ -101,7 +110,8 @@ return {
     "^[!#](assis)$",
     "^[!#](cobretti)$",
     "^[!#](sapequinha)$",
-    "^[!#](bind)s?$"
+    "^[!#](bind)s?$",
+    "^[!#](bond)s?$"
   },
   run = run
 }
