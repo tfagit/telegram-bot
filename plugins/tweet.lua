@@ -127,7 +127,7 @@ end
 
 
 local function analyze_tweet(tweet)
-   local header = "Tweet from " .. tweet.user.name .. " (@" .. tweet.user.screen_name .. ")\n" -- "Link: https://twitter.com/statuses/" .. tweet.id_str
+   local header = tweet.user.name .. " (@" .. tweet.user.screen_name .. "): " -- "Link: https://twitter.com/statuses/" .. tweet.id_str
    local text = tweet.text
 
    -- replace short URLs
@@ -159,7 +159,7 @@ end
 local function sendTweet(receiver, tweet)
    local header, text, urls = analyze_tweet(tweet)
    -- send the parts
-   send_msg(receiver, header .. "\n" .. text, ok_cb, false)
+   send_msg(receiver, header .. text, ok_cb, false)
    send_all_files(receiver, urls)
    return nil
 end
